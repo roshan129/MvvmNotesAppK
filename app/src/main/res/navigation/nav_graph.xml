@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/noteListFragment">
+
+    <fragment
+        android:id="@+id/addEditNoteFragment"
+        android:name="com.adivid.mvvmnotesappk.ui.fragments.AddEditNoteFragment"
+        android:label="AddEditNoteFragment" >
+        <action
+            android:id="@+id/action_addEditNoteFragment_to_noteListFragment"
+            app:destination="@id/noteListFragment"
+            app:popUpTo="@id/noteListFragment"
+            app:popUpToInclusive="true"
+
+       />
+    </fragment>
+    <fragment
+        android:id="@+id/noteListFragment"
+        android:name="com.adivid.mvvmnotesappk.ui.fragments.NoteListFragment"
+        android:label="NoteListFragment" >
+        <action
+            android:id="@+id/action_noteListFragment_to_addEditNoteFragment"
+            app:destination="@id/addEditNoteFragment" />
+    </fragment>
+</navigation>
