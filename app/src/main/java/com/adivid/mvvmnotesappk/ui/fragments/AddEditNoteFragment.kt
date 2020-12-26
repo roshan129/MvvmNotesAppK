@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentAddEditNoteBinding
 import com.adivid.mvvmnotesappk.db.Note
@@ -24,6 +25,7 @@ class AddEditNoteFragment :Fragment(R.layout.fragment_add_edit_note) {
     private var _binding : FragmentAddEditNoteBinding? = null
     private val binding get() = _binding!!
     private val noteViewModel: NoteViewModel by viewModels()
+    private val args by navArgs<AddEditNoteFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +48,13 @@ class AddEditNoteFragment :Fragment(R.layout.fragment_add_edit_note) {
         binding.floatingActionButton.setOnClickListener {
             insertNote()
         }
+
+        val s = args.Note
+        s?.let {
+            binding.editTextBody.setText(s)
+            binding.editTextBody.setSelection(s.length)
+        }
+
     }
 
     private fun insertNote() {

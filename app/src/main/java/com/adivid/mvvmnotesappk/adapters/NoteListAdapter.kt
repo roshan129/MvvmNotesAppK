@@ -12,8 +12,19 @@ import com.adivid.mvvmnotesappk.db.Note
 
 class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
 
-    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val textViewBody:TextView = itemView.findViewById(R.id.textViewBody)
+    var onItemClick: ((Note) -> Unit)? = null
+
+    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textViewBody: TextView = itemView.findViewById(R.id.textViewBody)
+
+        init {
+            itemView.setOnClickListener {
+                val noteItem = differ.currentList[adapterPosition]
+                noteItem?.let {
+                    onItemClick?.invoke(noteItem)
+                }
+            }
+        }
     }
 
     val diffCallback = object : DiffUtil.ItemCallback<Note>() {
@@ -28,7 +39,7 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
 
     val differ = AsyncListDiffer(this, diffCallback)
 
-    fun submitList(list: List<Note>) =differ.submitList(list)
+    fun submitList(list: List<Note>) = differ.submitList(list)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         return NoteViewHolder(
