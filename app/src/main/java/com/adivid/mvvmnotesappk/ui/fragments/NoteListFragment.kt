@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -25,6 +26,9 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private val binding get() = _binding!!
     private lateinit var noteListAdapter: NoteListAdapter
     private val noteViewModel: NoteViewModel by viewModels()
+    //abcd
+    //pqrs
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +50,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private fun init() {
         setUpRecyclerView()
 
-        noteViewModel.allNotes.observe(viewLifecycleOwner, {
+        noteViewModel.allNotes.observe(viewLifecycleOwner, Observer {
             /*binding.recyclerView.smoothScrollToPosition(0)*/
             noteListAdapter.submitList(it)
         })
