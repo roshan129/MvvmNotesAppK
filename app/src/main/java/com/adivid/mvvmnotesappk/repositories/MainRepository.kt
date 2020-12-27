@@ -11,6 +11,10 @@ class MainRepository @Inject constructor(
 
     suspend fun insertNote(note: Note): Long = noteDAO.insertNote(note)
 
+    suspend fun upateNote(note: Note): Int = noteDAO.updateNote(note)
+
+    suspend fun deleteNote(note: Note): Int = noteDAO.deleteNote(note)
+
     fun getAllNotes()  = noteDAO.getAllNotes()
 
 }

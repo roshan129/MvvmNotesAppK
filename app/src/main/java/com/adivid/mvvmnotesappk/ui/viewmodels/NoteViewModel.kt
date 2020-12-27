@@ -21,8 +21,19 @@ class NoteViewModel @ViewModelInject constructor(
     fun insertNote(note: Note) = viewModelScope.launch {
         /*return@async mainRepository.insertNote(note)*/
         val l = mainRepository.insertNote(note)
-        Timber.d("long : $l")
+        Timber.d("insert long : $l")
     }
+
+    fun updateNote(note: Note) = viewModelScope.launch {
+        val l = mainRepository.upateNote(note)
+        Timber.d("update int : $l")
+    }
+
+    fun deleteNote(note: Note) = viewModelScope.launch {
+        val l = mainRepository.deleteNote(note)
+        Timber.d("delete int: $l")
+    }
+
 
 
 

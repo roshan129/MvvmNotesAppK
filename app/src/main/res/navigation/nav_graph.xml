@@ -17,9 +17,9 @@
             />
         <argument
             android:name="Note"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="com.adivid.mvvmnotesappk.model.domain.NoteDto"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
     <fragment
         android:id="@+id/noteListFragment"

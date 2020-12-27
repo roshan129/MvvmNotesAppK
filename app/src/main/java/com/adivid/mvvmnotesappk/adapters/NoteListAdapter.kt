@@ -13,6 +13,7 @@ import com.adivid.mvvmnotesappk.db.Note
 class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
 
     var onItemClick: ((Note) -> Unit)? = null
+    var onItemLongClick: ((Note) -> Unit)? = null
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewBody: TextView = itemView.findViewById(R.id.textViewBody)
@@ -24,6 +25,15 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
                     onItemClick?.invoke(noteItem)
                 }
             }
+
+            itemView.setOnLongClickListener {
+                val noteItem = differ.currentList[adapterPosition]
+                noteItem.let {
+                    onItemLongClick?.invoke(noteItem)
+                }
+                return@setOnLongClickListener true
+            }
+
         }
     }
 

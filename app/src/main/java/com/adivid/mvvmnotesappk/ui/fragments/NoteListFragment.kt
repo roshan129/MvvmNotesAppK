@@ -1,11 +1,11 @@
 package com.adivid.mvvmnotesappk.ui.fragments
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.adapters.NoteListAdapter
 import com.adivid.mvvmnotesappk.databinding.FragmentNoteListBinding
+import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
+import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -26,9 +28,6 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private val binding get() = _binding!!
     private lateinit var noteListAdapter: NoteListAdapter
     private val noteViewModel: NoteViewModel by viewModels()
-    //abcd
-    //pqrs
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,8 +71,31 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         })
 
         noteListAdapter.onItemClick = {
-            val action = NoteListFragmentDirections.actionNoteListFragmentToAddEditNoteFragment(it.body)
+            val noteDto = NoteDtoMapper().mapFromEntity(it)
+            val action =
+                NoteListFragmentDirections.actionNoteListFragmentToAddEditNoteFragment(noteDto)
             findNavController().navigate(action)
+        }
+
+        noteListAdapter.onItemLongClick = {
+            val noteDto = NoteDtoMapper().mapFromEntity(it)
+            Timber.d("onlong clicked: ${noteDto.body}")
+            showAlertDialog(noteDto)
+        }
+    }
+
+    private fun showAlertDialog(noteDto: NoteDto) {
+        val n = NoteDtoMapper().mapToEntity(noteDto)
+        AlertDialog.Builder(context).apply {
+            setTitle("Confirm")
+            setMessage("Do you want to delete this Note?")
+            setPositiveButton("Yes") { _, _ ->
+                noteViewModel.deleteNote(n)
+            }
+            setNegativeButton("No") { _: DialogInterface?, _: Int ->
+
+            }
+            create().show()
         }
     }
 
@@ -81,7 +103,6 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_noteListFragment_to_addEditNoteFragment)
         }
-
     }
 
     override fun onDestroyView() {
