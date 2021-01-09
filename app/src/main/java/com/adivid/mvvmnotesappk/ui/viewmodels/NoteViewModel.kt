@@ -34,8 +34,9 @@ class NoteViewModel @ViewModelInject constructor(
         Timber.d("delete int: $l")
     }
 
-
-
+    fun deleteMultipleNotes(notes: List<Note>) = viewModelScope.launch {
+        mainRepository.deleteMultipleNotes(notes)
+    }
 
 
 }

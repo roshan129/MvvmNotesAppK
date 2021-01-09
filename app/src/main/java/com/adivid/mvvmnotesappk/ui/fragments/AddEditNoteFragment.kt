@@ -47,7 +47,9 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         imm!!.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
 
         binding.floatingActionButton.setOnClickListener {
-            insertOrUpdateNote()
+            if(validateFields()){
+                insertOrUpdateNote()
+            }
         }
 
         noteDto = args.Note
@@ -60,6 +62,16 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
     }
 
+    private fun validateFields(): Boolean {
+        val body = binding.editTextBody.text.toString().trim()
+        return if(body.isEmpty()){
+            Toast.makeText(requireContext(), "Please add a note!", Toast.LENGTH_SHORT).show();
+            false
+        }else{
+            true
+        }
+    }
+
     private fun insertOrUpdateNote() {
         val body = binding.editTextBody.text.toString().trim()
         val note = Note(body)
@@ -69,7 +81,6 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             Toast.makeText(requireContext(), "Updated", Toast.LENGTH_SHORT).show()
         } else {
             noteViewModel.insertNote(note)
-            Toast.makeText(requireContext(), "Inserted", Toast.LENGTH_SHORT).show()
         }
         Timber.d("inserted")
         /*findNavController().navigate(R.id.action_addEditNoteFragment_to_noteListFragment, null)*/

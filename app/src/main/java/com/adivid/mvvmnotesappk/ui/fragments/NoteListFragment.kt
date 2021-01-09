@@ -6,15 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.adapters.NoteListAdapter
 import com.adivid.mvvmnotesappk.databinding.FragmentNoteListBinding
+import com.adivid.mvvmnotesappk.db.Note
 import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
 import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
@@ -28,12 +31,13 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private val binding get() = _binding!!
     private lateinit var noteListAdapter: NoteListAdapter
     private val noteViewModel: NoteViewModel by viewModels()
+    private var isSelectionMode = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentNoteListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,7 +52,6 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
     private fun init() {
         setUpRecyclerView()
-
         noteViewModel.allNotes.observe(viewLifecycleOwner, Observer {
             /*binding.recyclerView.smoothScrollToPosition(0)*/
             noteListAdapter.submitList(it)
@@ -56,11 +59,27 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
     }
 
+    private fun setUpOnClickListeners() {
+        binding.floatingActionButton.setOnClickListener {
+            findNavController().navigate(R.id.action_noteListFragment_to_addEditNoteFragment)
+        }
+
+        binding.imageButtonDelete.setOnClickListener {
+            showDeleteMultipleAlertDialog()
+        }
+
+        binding.imageButtonCancel.setOnClickListener {
+            resetSelectionMode()
+        }
+    }
+
     private fun setUpRecyclerView() {
         binding.recyclerView.apply {
             noteListAdapter = NoteListAdapter()
             adapter = noteListAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+            val staggeredGridLayoutManager = StaggeredGridLayoutManager(
+                2, LinearLayoutManager.VERTICAL);
+            layoutManager = staggeredGridLayoutManager
         }
 
         binding.recyclerView.adapter?.registerAdapterDataObserver(object : AdapterDataObserver() {
@@ -70,21 +89,53 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             }
         })
 
-        noteListAdapter.onItemClick = {
-            val noteDto = NoteDtoMapper().mapFromEntity(it)
-            val action =
-                NoteListFragmentDirections.actionNoteListFragmentToAddEditNoteFragment(noteDto)
-            findNavController().navigate(action)
+        noteListAdapter.onItemClick = {note, i ->
+            val hasCheckedItems =noteListAdapter.getSelectedCount() > 0
+
+            if(hasCheckedItems && isSelectionMode){
+                noteListAdapter.toggleSelection(i)
+                if(noteListAdapter.getSelectedCount() > 0){
+                    Timber.d("${noteListAdapter.getSelectedCount()}")
+                    binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
+                }else{
+                    resetSelectionMode()
+                }
+
+            }else{
+                val noteDto = NoteDtoMapper().mapFromEntity(note)
+                val action =
+                    NoteListFragmentDirections.actionNoteListFragmentToAddEditNoteFragment(noteDto)
+                findNavController().navigate(action)
+            }
         }
 
-        noteListAdapter.onItemLongClick = {
-            val noteDto = NoteDtoMapper().mapFromEntity(it)
-            Timber.d("onlong clicked: ${noteDto.body}")
-            showAlertDialog(noteDto)
+        noteListAdapter.onItemLongClick = {_, i ->
+            isSelectionMode = true
+            noteListAdapter.toggleSelection(i)
+            val hasCheckedItems = noteListAdapter.getSelectedCount() > 0
+            binding.cardLayoutBottom.isVisible = hasCheckedItems
+            binding.cardLayoutTop.isVisible = hasCheckedItems
+            binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
         }
     }
 
-    private fun showAlertDialog(noteDto: NoteDto) {
+    private fun showDeleteMultipleAlertDialog() {
+        AlertDialog.Builder(context).apply {
+            setTitle("Confirm")
+            setMessage("Are you sure you want to delete selected notes?")
+            setPositiveButton("Yes") { _, _ ->
+                val listArray = noteListAdapter.getSelectedNotes()
+                noteViewModel.deleteMultipleNotes(listArray)
+                resetSelectionMode()
+            }
+            setNegativeButton("No") { _: DialogInterface?, _: Int ->
+
+            }
+            create().show()
+        }
+    }
+
+    private fun showDeleteAlertDialog(noteDto: NoteDto) {
         val n = NoteDtoMapper().mapToEntity(noteDto)
         AlertDialog.Builder(context).apply {
             setTitle("Confirm")
@@ -99,10 +150,12 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         }
     }
 
-    private fun setUpOnClickListeners() {
-        binding.floatingActionButton.setOnClickListener {
-            findNavController().navigate(R.id.action_noteListFragment_to_addEditNoteFragment)
-        }
+    private fun resetSelectionMode() {
+        isSelectionMode = false
+        noteListAdapter.removeSelection()
+        binding.cardLayoutBottom.isVisible = false
+        binding.cardLayoutTop.isVisible = false
+
     }
 
     override fun onDestroyView() {

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MvvmNotesAppK</string>
+    <string name="fab_contentDesc">fab</string>
 </resources>

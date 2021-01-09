@@ -15,6 +15,8 @@ class MainRepository @Inject constructor(
 
     suspend fun deleteNote(note: Note): Int = noteDAO.deleteNote(note)
 
+    suspend fun deleteMultipleNotes(notes: List<Note>) = noteDAO.deleteMultipleNotes(notes)
+
     fun getAllNotes()  = noteDAO.getAllNotes()
 
 }

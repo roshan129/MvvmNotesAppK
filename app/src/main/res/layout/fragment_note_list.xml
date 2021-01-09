@@ -12,7 +12,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
-        android:contentDescription="fab"
+        android:contentDescription="@string/fab_contentDesc"
+        android:focusable="true"
         android:src="@drawable/ic_baseline_add_24"
         app:backgroundTint="@color/amber_accent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -23,31 +24,120 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingBottom="12dp"
         android:clipToPadding="false"
+        android:paddingBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
-
-    <com.google.android.material.appbar.AppBarLayout
+    <RelativeLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="74dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:title="Notes"
-            app:titleTextColor="@color/white" />
+            android:text="Notes"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"
+            />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonSearch"
+            android:background="@color/white"
+            android:tint="@color/black"
+            android:layout_marginEnd="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_search_24"
+
+            />
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardLayoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/white"
+        android:translationZ="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutBottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/imageButtonDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:src="@drawable/ic_baseline_delete_outline_24"
+                android:tint="@color/black" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardLayoutTop"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/white"
+        android:translationZ="2dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutTop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/imageButtonCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="24dp"
+                android:background="@color/white"
+                android:src="@drawable/ic_close_24"
+                app:tint="@color/black"
+
+                />
+
+            <TextView
+                android:id="@+id/tv_items_selected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="0 Items Selected"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+
+                />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,4 +18,7 @@ interface NoteDAO {
     @Delete
     suspend fun deleteNote(note: Note): Int
 
+    @Delete
+    suspend fun deleteMultipleNotes(notes: List<Note>)
+
 }
