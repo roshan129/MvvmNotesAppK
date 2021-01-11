@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,6 +25,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="12dp"
+        android:paddingStart="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,25 +42,85 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
             android:text="Notes"
             android:textColor="@color/black"
-            android:textSize="24sp"
-            android:layout_marginStart="20dp"
-            android:layout_centerVertical="true"
-            />
+            android:textSize="24sp" />
 
         <ImageButton
+            android:id="@+id/imageButtonSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButtonSearch"
-            android:background="@color/white"
-            android:tint="@color/black"
-            android:layout_marginEnd="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="24dp"
+            android:padding="8dp"
+            android:background="@color/white"
             android:src="@drawable/ic_search_24"
+            android:tint="@color/black"
 
             />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeSearchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButtonSearchBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:background="@color/white"
+            android:tint="@color/black"
+            android:padding="4dp"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+
+        <ImageButton
+            android:id="@+id/imageButtonSearchCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:background="@color/white"
+            android:padding="4dp"
+            android:tint="@color/black"
+            android:src="@drawable/ic_close_24" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_search"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@+id/imageButtonSearchCancel"
+            android:layout_toEndOf="@+id/imageButtonSearchBack"
+            app:placeholderText="Search"
+            app:hintAnimationEnabled="false"
+
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_border"
+                android:drawableStart="@drawable/ic_search_24"
+                android:drawablePadding="2dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </RelativeLayout>
 
@@ -70,6 +130,8 @@
         android:layout_height="60dp"
         android:background="@color/white"
         android:translationZ="8dp"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

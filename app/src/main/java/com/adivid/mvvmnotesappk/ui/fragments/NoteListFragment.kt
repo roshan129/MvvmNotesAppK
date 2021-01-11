@@ -1,11 +1,17 @@
 package com.adivid.mvvmnotesappk.ui.fragments
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,12 +23,13 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.adapters.NoteListAdapter
 import com.adivid.mvvmnotesappk.databinding.FragmentNoteListBinding
-import com.adivid.mvvmnotesappk.db.Note
 import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
 import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
+import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+
 
 @AndroidEntryPoint
 class NoteListFragment : Fragment(R.layout.fragment_note_list) {
@@ -32,6 +39,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private lateinit var noteListAdapter: NoteListAdapter
     private val noteViewModel: NoteViewModel by viewModels()
     private var isSelectionMode = false
+    private var backPressed: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,12 +59,24 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     }
 
     private fun init() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
         setUpRecyclerView()
         noteViewModel.allNotes.observe(viewLifecycleOwner, Observer {
             /*binding.recyclerView.smoothScrollToPosition(0)*/
             noteListAdapter.submitList(it)
         })
 
+        noteViewModel.searchNotes.observe(viewLifecycleOwner, {
+            if (it != null && it.isNotEmpty()) {
+                noteListAdapter.submitList(it)
+                noteListAdapter.notifyDataSetChanged()
+            } else {
+                Timber.d("in else null")
+            }
+        })
     }
 
     private fun setUpOnClickListeners() {
@@ -71,6 +91,48 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         binding.imageButtonCancel.setOnClickListener {
             resetSelectionMode()
         }
+
+        binding.imageButtonSearch.setOnClickListener {
+            binding.relativeSearchLayout.isVisible = true
+            binding.editTextSearch.requestFocus()
+            showOrHideKeyBoard(true)
+        }
+
+        binding.imageButtonSearchCancel.setOnClickListener {
+            if (binding.editTextSearch.text!!.isEmpty()) {
+                binding.relativeSearchLayout.isVisible = false
+                showOrHideKeyBoard(false)
+            } else {
+                binding.editTextSearch.setText("")
+            }
+        }
+
+        binding.imageButtonSearchBack.setOnClickListener {
+            binding.relativeSearchLayout.isVisible = false
+            binding.editTextSearch.setText("")
+            showOrHideKeyBoard(false)
+
+        }
+
+        binding.editTextSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchForNotes(s)
+                Timber.d("string: $s")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
+
+    }
+
+    private fun searchForNotes(s: CharSequence?) {
+        noteViewModel.searchNotes(s.toString())
     }
 
     private fun setUpRecyclerView() {
@@ -78,7 +140,8 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             noteListAdapter = NoteListAdapter()
             adapter = noteListAdapter
             val staggeredGridLayoutManager = StaggeredGridLayoutManager(
-                2, LinearLayoutManager.VERTICAL);
+                2, LinearLayoutManager.VERTICAL
+            );
             layoutManager = staggeredGridLayoutManager
         }
 
@@ -89,19 +152,19 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             }
         })
 
-        noteListAdapter.onItemClick = {note, i ->
-            val hasCheckedItems =noteListAdapter.getSelectedCount() > 0
+        noteListAdapter.onItemClick = { note, i ->
+            val hasCheckedItems = noteListAdapter.getSelectedCount() > 0
 
-            if(hasCheckedItems && isSelectionMode){
+            if (hasCheckedItems && isSelectionMode) {
                 noteListAdapter.toggleSelection(i)
-                if(noteListAdapter.getSelectedCount() > 0){
+                if (noteListAdapter.getSelectedCount() > 0) {
                     Timber.d("${noteListAdapter.getSelectedCount()}")
                     binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
-                }else{
+                } else {
                     resetSelectionMode()
                 }
 
-            }else{
+            } else {
                 val noteDto = NoteDtoMapper().mapFromEntity(note)
                 val action =
                     NoteListFragmentDirections.actionNoteListFragmentToAddEditNoteFragment(noteDto)
@@ -109,7 +172,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             }
         }
 
-        noteListAdapter.onItemLongClick = {_, i ->
+        noteListAdapter.onItemLongClick = { _, i ->
             isSelectionMode = true
             noteListAdapter.toggleSelection(i)
             val hasCheckedItems = noteListAdapter.getSelectedCount() > 0
@@ -158,8 +221,36 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
     }
 
+    private fun showOrHideKeyBoard(boolean: Boolean) {
+        val imm: InputMethodManager? =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        if (boolean) {
+            imm!!.showSoftInput(binding.editTextSearch, InputMethodManager.SHOW_IMPLICIT)
+            //imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        } else {
+            imm!!.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if(binding.relativeSearchLayout.isVisible){
+                binding.editTextSearch.setText("")
+                binding.relativeSearchLayout.isVisible = false
+                return
+            }
+            if(backPressed + TIME_INTERVAL > System.currentTimeMillis()){
+                requireActivity().finish()
+            }else{
+                Toast.makeText(requireContext(),"Press back again to exit!", Toast.LENGTH_SHORT).show();
+            }
+            backPressed = System.currentTimeMillis()
+        }
+    }
+
 }

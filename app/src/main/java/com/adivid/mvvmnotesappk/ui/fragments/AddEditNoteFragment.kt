@@ -40,24 +40,33 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        /* requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)*/
+        init()
+        setUpOnClickListeners()
+
+    }
+
+    private fun init() {
         binding.editTextBody.requestFocus()
-        val imm =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-
-        binding.floatingActionButton.setOnClickListener {
-            if(validateFields()){
-                insertOrUpdateNote()
-            }
-        }
-
+        showOrHideKeyBoard(true)
         noteDto = args.Note
         noteDto?.let {
             val noteMessage = it.body
             binding.editTextBody.setText(noteMessage)
             binding.editTextBody.setSelection(noteMessage.length)
             isUpdate = true
+        }
+    }
+
+    private fun setUpOnClickListeners() {
+        binding.floatingActionButton.setOnClickListener {
+            if(validateFields()){
+                insertOrUpdateNote()
+            }
+        }
+
+        binding.imageButtonBack.setOnClickListener {
+            showOrHideKeyBoard(false)
+            requireActivity().onBackPressed()
         }
 
     }
@@ -85,6 +94,17 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         Timber.d("inserted")
         /*findNavController().navigate(R.id.action_addEditNoteFragment_to_noteListFragment, null)*/
         requireActivity().onBackPressed()
+    }
+
+    private fun showOrHideKeyBoard(boolean: Boolean) {
+        val imm: InputMethodManager? =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        if (boolean) {
+            imm!!.showSoftInput(binding.editTextBody, InputMethodManager.SHOW_IMPLICIT)
+            //imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        } else {
+            imm!!.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+        }
     }
 
     override fun onDestroyView() {

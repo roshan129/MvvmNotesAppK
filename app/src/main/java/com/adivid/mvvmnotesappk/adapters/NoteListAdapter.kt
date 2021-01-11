@@ -20,7 +20,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import timber.log.Timber
 import java.util.*
 
-
 class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
 
     private lateinit var context: Context
@@ -31,6 +30,7 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewBody: TextView = itemView.findViewById(R.id.textViewBody)
+        val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
         val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkbox)
         val cardRelativeLayout: RelativeLayout = itemView.findViewById(R.id.cardRelativeLayout)
 
@@ -81,6 +81,7 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = differ.currentList[position]
         holder.textViewBody.text = note.body
+        holder.textViewDate.text = note.createdDateFormatted
         if (selectedItemIds.get(position)) {
             holder.checkBox.isVisible = true
             holder.checkBox.isChecked = true

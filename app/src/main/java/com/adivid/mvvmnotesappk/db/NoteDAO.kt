@@ -10,10 +10,13 @@ interface NoteDAO {
     fun getAllNotes(): LiveData<List<Note>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNote(note: Note) : Long
+    suspend fun insertNote(note: Note): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateNote(note: Note) : Int
+    suspend fun updateNote(note: Note): Int
+
+    @Query("SELECT * from note WHERE body LIKE '%'||:string ||'%' ORDER BY id DESC")
+    suspend fun searchNotes(string: String): List<Note>
 
     @Delete
     suspend fun deleteNote(note: Note): Int
