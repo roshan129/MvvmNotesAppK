@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 
 class MainRepository @Inject constructor(
-    val noteDAO: NoteDAO
+    private val noteDAO: NoteDAO
 ) {
 
     suspend fun insertNote(note: Note): Long = noteDAO.insertNote(note)

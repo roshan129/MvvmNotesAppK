@@ -103,7 +103,8 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             imm!!.showSoftInput(binding.editTextBody, InputMethodManager.SHOW_IMPLICIT)
             //imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         } else {
-            imm!!.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+            //imm!!.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0)
+            imm!!.hideSoftInputFromWindow(binding.editTextBody.windowToken, 0)
         }
     }
 

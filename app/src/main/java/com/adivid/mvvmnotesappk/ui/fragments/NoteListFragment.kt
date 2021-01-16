@@ -9,13 +9,13 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -27,6 +27,7 @@ import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
 import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
 import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
+import com.adivid.mvvmnotesappk.utils.afterTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -64,7 +65,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             onBackPressedCallback
         )
         setUpRecyclerView()
-        noteViewModel.allNotes.observe(viewLifecycleOwner, Observer {
+        noteViewModel.allNotes.observe(viewLifecycleOwner, {
             /*binding.recyclerView.smoothScrollToPosition(0)*/
             noteListAdapter.submitList(it)
         })
@@ -111,23 +112,15 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             binding.relativeSearchLayout.isVisible = false
             binding.editTextSearch.setText("")
             showOrHideKeyBoard(false)
-
         }
 
-        binding.editTextSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        binding.imageViewProfile.setOnClickListener {
+            findNavController().navigate(R.id.action_noteListFragment_to_profileFragment)
+        }
 
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchForNotes(s)
-                Timber.d("string: $s")
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-        })
+        binding.editTextSearch.afterTextChanged { s ->
+            searchForNotes(s)
+        }
 
     }
 
@@ -141,7 +134,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             adapter = noteListAdapter
             val staggeredGridLayoutManager = StaggeredGridLayoutManager(
                 2, LinearLayoutManager.VERTICAL
-            );
+            )
             layoutManager = staggeredGridLayoutManager
         }
 
@@ -181,6 +174,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
         }
     }
+
 
     private fun showDeleteMultipleAlertDialog() {
         AlertDialog.Builder(context).apply {
@@ -239,15 +233,16 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if(binding.relativeSearchLayout.isVisible){
+            if (binding.relativeSearchLayout.isVisible) {
                 binding.editTextSearch.setText("")
                 binding.relativeSearchLayout.isVisible = false
                 return
             }
-            if(backPressed + TIME_INTERVAL > System.currentTimeMillis()){
+            if (backPressed + TIME_INTERVAL > System.currentTimeMillis()) {
                 requireActivity().finish()
-            }else{
-                Toast.makeText(requireContext(),"Press back again to exit!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Press back again to exit!", Toast.LENGTH_SHORT)
+                    .show()
             }
             backPressed = System.currentTimeMillis()
         }

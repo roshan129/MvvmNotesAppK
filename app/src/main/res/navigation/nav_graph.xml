@@ -28,5 +28,38 @@
         <action
             android:id="@+id/action_noteListFragment_to_addEditNoteFragment"
             app:destination="@id/addEditNoteFragment" />
+        <action
+            android:id="@+id/action_noteListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.adivid.mvvmnotesappk.ui.fragments.ProfileFragment"
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_noteListFragment"
+            app:destination="@id/noteListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.adivid.mvvmnotesappk.ui.fragments.SignInFragment"
+        android:label="SignInFragment" >
+        <action
+            android:id="@+id/action_signInFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_createAccountFragment"
+            app:destination="@id/createAccountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createAccountFragment"
+        android:name="com.adivid.mvvmnotesappk.ui.fragments.CreateAccountFragment"
+        android:label="CreateAccountFragment" >
+        <action
+            android:id="@+id/action_createAccountFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
 </navigation>

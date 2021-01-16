@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -24,8 +27,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="12dp"
         android:paddingStart="12dp"
+        android:paddingBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,12 +58,21 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="24dp"
-            android:padding="8dp"
             android:background="@color/white"
+            android:padding="8dp"
             android:src="@drawable/ic_search_24"
             android:tint="@color/black"
 
             />
+
+        <ImageView
+            android:id="@+id/imageViewProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_toStartOf="@+id/imageButtonSearch"
+            android:src="@drawable/ic_baseline_face_24" />
 
     </RelativeLayout>
 
@@ -81,9 +93,9 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="12dp"
             android:background="@color/white"
-            android:tint="@color/black"
             android:padding="4dp"
-            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+            android:src="@drawable/ic_baseline_arrow_back_ios_24"
+            android:tint="@color/black" />
 
         <ImageButton
             android:id="@+id/imageButtonSearchCancel"
@@ -94,8 +106,8 @@
             android:layout_marginEnd="12dp"
             android:background="@color/white"
             android:padding="4dp"
-            android:tint="@color/black"
-            android:src="@drawable/ic_close_24" />
+            android:src="@drawable/ic_close_24"
+            android:tint="@color/black" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_search"
@@ -107,8 +119,8 @@
             android:layout_marginEnd="4dp"
             android:layout_toStartOf="@+id/imageButtonSearchCancel"
             android:layout_toEndOf="@+id/imageButtonSearchBack"
-            app:placeholderText="Search"
             app:hintAnimationEnabled="false"
+            app:placeholderText="Search"
 
             >
 
@@ -129,9 +141,9 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/white"
-        android:translationZ="8dp"
         android:clickable="true"
         android:focusable="true"
+        android:translationZ="8dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

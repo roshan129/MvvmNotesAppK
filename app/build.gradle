@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -46,6 +47,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.firebase:firebase-auth:20.0.2'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -80,6 +82,12 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.1.0"
 
     implementation "androidx.fragment:fragment-ktx:1.2.5"
+
+    //Circular ImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    //firebase with coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
 
 
 }

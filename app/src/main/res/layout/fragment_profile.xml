@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imageView"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_person_24"
+        app:civ_border_color="@color/blue_grey_primary"
+        app:civ_border_width="2dp"
+        app:civ_circle_background_color="@color/blue_grey_primary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonBack"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/textViewSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Sign In Or Sign Up"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <ImageButton
+        android:id="@+id/imageButtonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        android:background="@color/white"
+        android:layout_marginStart="16dp"
+        android:tint="@color/black"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+         />
+</androidx.constraintlayout.widget.ConstraintLayout>

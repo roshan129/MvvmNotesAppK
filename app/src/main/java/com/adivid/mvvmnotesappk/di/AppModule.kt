@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.adivid.mvvmnotesappk.db.NoteDatabase
 import com.adivid.mvvmnotesappk.utils.Constants.NOTE_DATABASE_NAME
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +32,9 @@ object AppModule {
     fun provideNoteDao(
         db: NoteDatabase
     ) = db.getNoteDao()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
 
 }

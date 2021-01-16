@@ -89,12 +89,12 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
             holder.checkBox.isVisible = false
         }
         when (Utils.getRandomNumber()) {
-            1 -> setUpBGColor(holder, R.color.white)
-            2 -> setUpBGColor(holder, R.color.white)
-            3 -> setUpBGColor(holder, R.color.white)
-            4 -> setUpBGColor(holder, R.color.white)
-            5 -> setUpBGColor(holder, R.color.white)
-            6 -> setUpBGColor(holder, R.color.white)
+            1 -> setUpBGColor(holder, R.color.notesColorBrown)
+            2 -> setUpBGColor(holder, R.color.notesColorOrange)
+            3 -> setUpBGColor(holder, R.color.notesColorGreen)
+            4 -> setUpBGColor(holder, R.color.notesColorPurple)
+            5 -> setUpBGColor(holder, R.color.notesColorRedLight)
+            6 -> setUpBGColor(holder, R.color.notesColorAmber)
         }
 
     }

@@ -31,7 +31,6 @@
             android:textColor="@color/black"
             android:textSize="22sp" />
 
-
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -51,6 +50,7 @@
                 android:layout_height="match_parent"
                 app:boxStrokeColor="@color/white"
                 app:boxStrokeWidth="0dp"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -61,9 +61,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top"
+                    android:textCursorDrawable="@drawable/cursor_color"
+
+                    android:textColor="@color/black"
                     android:inputType="textMultiLine"
                     android:minLines="20"
-
                     android:textSize="18sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -77,6 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:contentDescription="@string/fab_contentDesc"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
