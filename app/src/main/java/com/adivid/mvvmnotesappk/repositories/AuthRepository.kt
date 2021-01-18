@@ -16,5 +16,10 @@ class AuthRepository @Inject constructor(
         return auth.currentUser != null
     }
 
+    suspend fun loginUser(email: String, password: String): Boolean {
+        auth.signInWithEmailAndPassword(email, password).await()
+        return auth.currentUser != null
+    }
+
 
 }

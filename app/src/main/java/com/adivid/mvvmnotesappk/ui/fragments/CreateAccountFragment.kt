@@ -1,19 +1,20 @@
 package com.adivid.mvvmnotesappk.ui.fragments
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentCreateAccountBinding
-import com.adivid.mvvmnotesappk.ui.fragments.states.UiStates
+import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
 import com.adivid.mvvmnotesappk.utils.showProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
+class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
 
     private var _binding: FragmentCreateAccountBinding? = null
     private val binding get() = _binding!!
@@ -37,17 +38,18 @@ class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
         })
 
         authViewModel.progressBar.observe(viewLifecycleOwner, {
-            binding.progressBar.showProgressBar(it)
+            showProgressBar(it)
         })
 
-        authViewModel.uiStates.observe(viewLifecycleOwner, {
-            uiState->
-            when(uiState){
-                is UiStates.Loading ->{
-                    binding.progressBar.showProgressBar(uiState.isLoading)
+        authViewModel.uiStates.observe(viewLifecycleOwner, { uiState ->
+            when (uiState) {
+                is LoadingStates.Loading -> {
+                    showProgressBar(uiState.isLoading)
                 }
-                is UiStates.Error ->{
-
+                is LoadingStates.Error -> {
+                    showProgressBar(false)
+                    Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT)
+                        .show();
                 }
             }
         })
@@ -67,7 +69,7 @@ class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
     private fun registerUser() {
         val email = binding.editTextUsername.text.trim().toString()
         val password = binding.editTextPassword.text.trim().toString()
-        if(validateFields(email, password)){
+        if (validateFields(email, password)) {
             authViewModel.registerUser(email, password)
         }
     }
@@ -82,14 +84,23 @@ class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
                 Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show();
                 return false
             }
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                Toast.makeText(requireContext(), "Enter a valid email", Toast.LENGTH_SHORT).show();
+                return false
+            }
             password.length < 6 -> {
-                Toast.makeText(requireContext(),
-                    "Password should be at least 6 characters long", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Password should be at least 6 characters long", Toast.LENGTH_SHORT
+                ).show()
                 return false
             }
             else -> return true
         }
+    }
 
+    private fun showProgressBar(b: Boolean) {
+        binding.progressBar.showProgressBar(b)
     }
 
     override fun onDestroyView() {
