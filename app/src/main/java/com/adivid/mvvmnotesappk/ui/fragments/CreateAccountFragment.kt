@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentCreateAccountBinding
+import com.adivid.mvvmnotesappk.ui.fragments.states.UiStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
 import com.adivid.mvvmnotesappk.utils.showProgressBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +39,18 @@ class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
         authViewModel.progressBar.observe(viewLifecycleOwner, {
             binding.progressBar.showProgressBar(it)
         })
+
+        authViewModel.uiStates.observe(viewLifecycleOwner, {
+            uiState->
+            when(uiState){
+                is UiStates.Loading ->{
+                    binding.progressBar.showProgressBar(uiState.isLoading)
+                }
+                is UiStates.Error ->{
+
+                }
+            }
+        })
     }
 
     private fun setUpOnClickListeners() {
@@ -54,13 +67,29 @@ class CreateAccountFragment: Fragment(R.layout.fragment_create_account) {
     private fun registerUser() {
         val email = binding.editTextUsername.text.trim().toString()
         val password = binding.editTextPassword.text.trim().toString()
-        if(email.isNotEmpty() && password.isNotEmpty()){
+        if(validateFields(email, password)){
             authViewModel.registerUser(email, password)
-        }else if(password.length < 6) {
-            Toast.makeText(requireContext(), "Password should be at least 6 characters long", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(requireActivity(), "Please Enter All Fields", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private fun validateFields(email: String, password: String): Boolean {
+        when {
+            email.isEmpty() -> {
+                Toast.makeText(requireContext(), "Enter email", Toast.LENGTH_SHORT).show();
+                return false
+            }
+            password.isEmpty() -> {
+                Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show();
+                return false
+            }
+            password.length < 6 -> {
+                Toast.makeText(requireContext(),
+                    "Password should be at least 6 characters long", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            else -> return true
+        }
+
     }
 
     override fun onDestroyView() {
