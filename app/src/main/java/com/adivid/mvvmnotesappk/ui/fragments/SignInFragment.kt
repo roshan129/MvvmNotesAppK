@@ -34,6 +34,7 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
         authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
             if (userCreated) {
                 Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
             } else {
                 Toast.makeText(requireActivity(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
             }

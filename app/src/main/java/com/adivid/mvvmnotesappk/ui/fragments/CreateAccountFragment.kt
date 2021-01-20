@@ -1,17 +1,21 @@
 package com.adivid.mvvmnotesappk.ui.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentCreateAccountBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
+import com.adivid.mvvmnotesappk.utils.SharedPrefManager
 import com.adivid.mvvmnotesappk.utils.showProgressBar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
@@ -19,6 +23,11 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
     private var _binding: FragmentCreateAccountBinding? = null
     private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModels()
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    //@Inject lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,6 +41,8 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
         authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
             if (userCreated) {
                 Toast.makeText(requireContext(), "User Created", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_createAccountFragment_to_profileFragment)
+
             } else {
                 Toast.makeText(requireActivity(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
             }

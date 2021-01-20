@@ -6,4 +6,8 @@ object Constants {
 
     const val TIME_INTERVAL = 2000
 
+    const val SHARED_PREF_NAME = "my_notes_pref"
+
+    const val KEY_EMAIL = "email"
+
 }

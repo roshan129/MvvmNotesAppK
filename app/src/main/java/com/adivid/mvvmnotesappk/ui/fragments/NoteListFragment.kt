@@ -30,7 +30,7 @@ import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
 import com.adivid.mvvmnotesappk.utils.afterTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-
+import javax.inject.Named
 
 @AndroidEntryPoint
 class NoteListFragment : Fragment(R.layout.fragment_note_list) {
@@ -56,15 +56,11 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
         init()
         setUpOnClickListeners()
+        observers()
 
     }
 
-    private fun init() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            onBackPressedCallback
-        )
-        setUpRecyclerView()
+    private fun observers() {
         noteViewModel.allNotes.observe(viewLifecycleOwner, {
             /*binding.recyclerView.smoothScrollToPosition(0)*/
             noteListAdapter.submitList(it)
@@ -78,6 +74,15 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
                 Timber.d("in else null")
             }
         })
+    }
+
+    private fun init() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
+        setUpRecyclerView()
+
     }
 
     private fun setUpOnClickListeners() {
