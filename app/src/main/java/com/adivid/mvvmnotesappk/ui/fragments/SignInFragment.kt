@@ -33,6 +33,7 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
     private fun init() {
         authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
             if (userCreated) {
+                fetchDataFromFirebase()
                 Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
             } else {
@@ -96,6 +97,10 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
             }
             else -> return true
         }
+    }
+
+    private fun fetchDataFromFirebase() {
+        authViewModel.fetchDataFromFirebase()
     }
 
     private fun showProgressBar(b: Boolean) {

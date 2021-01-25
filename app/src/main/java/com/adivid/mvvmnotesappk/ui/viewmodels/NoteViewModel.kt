@@ -2,21 +2,26 @@ package com.adivid.mvvmnotesappk.ui.viewmodels
 
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adivid.mvvmnotesappk.db.Note
-import com.adivid.mvvmnotesappk.repositories.MainRepository
+import com.adivid.mvvmnotesappk.repositories.NoteRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
+import javax.inject.Named
 
 class NoteViewModel @ViewModelInject constructor(
-    private val mainRepository: MainRepository
+    private val mainRepository: NoteRepository,
+    auth: FirebaseAuth
 ) : ViewModel() {
 
-    val allNotes = mainRepository.getAllNotes()
+    var firebaseUid = auth.currentUser?.uid ?: "0"
+
+    val allNotes = mainRepository.getAllNotes(firebaseUid)
+    val syncNotes = mainRepository.getNotesToSync()
+    val deleteNotesFromServer = mainRepository.getNotesToDelete()
     var searchNotes = MutableLiveData<List<Note>>()
 
     fun insertNote(note: Note) = viewModelScope.launch {
@@ -31,7 +36,7 @@ class NoteViewModel @ViewModelInject constructor(
     }
 
     fun searchNotes(string: String) = viewModelScope.launch {
-        val notes = mainRepository.searchNotes(string)
+        val notes = mainRepository.searchNotes(string, firebaseUid)
         searchNotes.value = notes
     }
 
@@ -41,7 +46,30 @@ class NoteViewModel @ViewModelInject constructor(
     }
 
     fun deleteMultipleNotes(notes: List<Note>) = viewModelScope.launch {
-        mainRepository.deleteMultipleNotes(notes)
+        val i = mainRepository.deleteMultipleNotes(notes)
+        if (i > 0) {
+            repeat(notes.size) {
+                val note = notes[it]
+                note.isDeleted = 1
+                mainRepository.updateNote(note)
+            }
+        }
+    }
+
+    fun updateMultipleNotes(notes: List<Note>) = viewModelScope.launch {
+        //val i = mainRepository.updateMultipleNote(notes)
+        val list = mutableListOf<Note>()
+        repeat(notes.size) {
+            val note = notes[it]
+            note.isDeleted = 1
+            list.add(note)
+        }
+        val i = mainRepository.updateMultipleNote(list)
+        Timber.d("updateMultipleNote: $i")
+    }
+
+    fun fetchDataFromFirebase() {
+
     }
 
 

@@ -4,12 +4,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -20,17 +17,23 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.work.*
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.adapters.NoteListAdapter
 import com.adivid.mvvmnotesappk.databinding.FragmentNoteListBinding
+import com.adivid.mvvmnotesappk.mapper.FirebaseNoteDtoMapper
 import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
+import com.adivid.mvvmnotesappk.model.domain.FirebaseNoteDto
 import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
 import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
+import com.adivid.mvvmnotesappk.utils.Constants.UNIQUE_WORK_NAME
+import com.adivid.mvvmnotesappk.utils.FirebaseWorker
 import com.adivid.mvvmnotesappk.utils.afterTextChanged
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Named
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NoteListFragment : Fragment(R.layout.fragment_note_list) {
@@ -41,6 +44,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private val noteViewModel: NoteViewModel by viewModels()
     private var isSelectionMode = false
     private var backPressed: Long = 0
+    @Inject lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,6 +78,18 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
                 Timber.d("in else null")
             }
         })
+
+        noteViewModel.syncNotes.observe(viewLifecycleOwner, { list ->
+            if (list.isNotEmpty()) {
+                sendDataToFirebase()
+            }
+        })
+
+        noteViewModel.deleteNotesFromServer.observe(viewLifecycleOwner, {
+            if(it.isNotEmpty()){
+                sendDataToFirebase()
+            }
+        })
     }
 
     private fun init() {
@@ -82,7 +98,6 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             onBackPressedCallback
         )
         setUpRecyclerView()
-
     }
 
     private fun setUpOnClickListeners() {
@@ -180,6 +195,17 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         }
     }
 
+    private fun sendDataToFirebase() {
+        val constraints =Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val request = OneTimeWorkRequest.Builder(FirebaseWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+        val workManager = WorkManager.getInstance(requireContext().applicationContext)
+        /*workManager.enqueueUniquePeriodicWork(UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)*/
+        workManager.beginUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.KEEP, request).enqueue()
+    }
 
     private fun showDeleteMultipleAlertDialog() {
         AlertDialog.Builder(context).apply {
@@ -187,23 +213,8 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             setMessage("Are you sure you want to delete selected notes?")
             setPositiveButton("Yes") { _, _ ->
                 val listArray = noteListAdapter.getSelectedNotes()
-                noteViewModel.deleteMultipleNotes(listArray)
+                noteViewModel.updateMultipleNotes(listArray)
                 resetSelectionMode()
-            }
-            setNegativeButton("No") { _: DialogInterface?, _: Int ->
-
-            }
-            create().show()
-        }
-    }
-
-    private fun showDeleteAlertDialog(noteDto: NoteDto) {
-        val n = NoteDtoMapper().mapToEntity(noteDto)
-        AlertDialog.Builder(context).apply {
-            setTitle("Confirm")
-            setMessage("Do you want to delete this Note?")
-            setPositiveButton("Yes") { _, _ ->
-                noteViewModel.deleteNote(n)
             }
             setNegativeButton("No") { _: DialogInterface?, _: Int ->
 

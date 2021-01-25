@@ -51,5 +51,11 @@ class AuthViewModel @ViewModelInject constructor(
 
     }
 
+    fun fetchDataFromFirebase(){
+        viewModelScope.launch {
+            authRepository.fetchDataFromFirebase()
+        }
+    }
+
 }
 

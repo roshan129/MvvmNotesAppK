@@ -10,4 +10,6 @@ object Constants {
 
     const val KEY_EMAIL = "email"
 
+    const val UNIQUE_WORK_NAME = "unique_work_request"
+
 }

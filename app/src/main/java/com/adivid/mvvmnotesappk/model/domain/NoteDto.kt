@@ -4,6 +4,7 @@ import java.io.Serializable
 
 data class NoteDto(
     val id: Int?,
-    val body: String
+    val body: String,
+    var docId:String? = null
 ): Serializable {
 }

@@ -10,13 +10,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentAddEditNoteBinding
 import com.adivid.mvvmnotesappk.db.Note
 import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
+import com.adivid.mvvmnotesappk.utils.FirebaseWorker
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
@@ -27,6 +32,7 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     private val args by navArgs<AddEditNoteFragmentArgs>()
     private var isUpdate = false
     private var noteDto: NoteDto? = null
+    @Inject lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +74,6 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             showOrHideKeyBoard(false)
             requireActivity().onBackPressed()
         }
-
     }
 
     private fun validateFields(): Boolean {
@@ -83,9 +88,13 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
     private fun insertOrUpdateNote() {
         val body = binding.editTextBody.text.toString().trim()
-        val note = Note(body)
+        val userId = if(auth.currentUser != null) auth.currentUser!!.uid else "0"
+        val note = Note(body = body, userId = userId)
         if (isUpdate) {
-            note.id = this.noteDto?.id
+            note.id = noteDto?.id
+            note.isUpdated = 1
+            note.isDataSent = 0
+            note.documentId = noteDto?.docId
             noteViewModel.updateNote(note)
             Toast.makeText(requireContext(), "Updated", Toast.LENGTH_SHORT).show()
         } else {
