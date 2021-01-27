@@ -3,7 +3,9 @@ package com.adivid.mvvmnotesappk.ui.fragments
 import android.app.AlertDialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -11,6 +13,9 @@ import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentProfileBinding
 import com.adivid.mvvmnotesappk.utils.Constants.KEY_EMAIL
 import com.adivid.mvvmnotesappk.utils.SharedPrefManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -22,13 +27,13 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
     private var _binding :FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    @Inject
-    lateinit var sharedPrefManager: SharedPrefManager
+    @Inject lateinit var sharedPrefManager: SharedPrefManager
 
     @Inject lateinit var sharedPreferencs: SharedPreferences
 
-    @Inject
-    lateinit var auth: FirebaseAuth
+    @Inject lateinit var auth: FirebaseAuth
+
+    @Inject lateinit var gso: GoogleSignInOptions
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,15 +78,28 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
             setTitle("Sign Out")
             setMessage("Are you sure you want to log out?")
             setPositiveButton("Yes") { _, _ ->
-                auth.signOut()
-                if (auth.currentUser == null) binding.textViewSignIn.text = "Sign In or Sign Up"
-                sharedPrefManager.clearPrefs()
+                signOut()
+
             }
             setNegativeButton("No"){_,_->
 
             }
             create().show()
         }
+    }
+
+    private fun signOut() {
+        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+        auth.signOut()
+        if (auth.currentUser == null) binding.textViewSignIn.text = "Sign In Or Sign Up"
+        sharedPrefManager.clearPrefs()
+        googleSignInClient.signOut().addOnCompleteListener {
+            if(it.isSuccessful){
+                Timber.d("isSuccessfull : ${it.isSuccessful}")
+                Toast.makeText(requireContext(), "Successfully Logged Out", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     override fun onDestroyView() {

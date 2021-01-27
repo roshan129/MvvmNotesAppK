@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "969459509454",
+    "project_id": "mvvmnotesappk",
+    "storage_bucket": "mvvmnotesappk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969459509454:android:e328596a1dc0181b1c089f",
+        "android_client_info": {
+          "package_name": "com.adivid.mvvmnotesappk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "969459509454-1eudnugf424jd3b2qhig9rjfbahvdt9j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adivid.mvvmnotesappk",
+            "certificate_hash": "068b96228b15c74bb46c3aa2177706ca5feaf807"
+          }
+        },
+        {
+          "client_id": "969459509454-lks4iqt2r0avg3kufr6m693rpdkbtcpp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB9xKGdjYqLDOpyGdHJmsXokql7Xh_mrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "969459509454-lks4iqt2r0avg3kufr6m693rpdkbtcpp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

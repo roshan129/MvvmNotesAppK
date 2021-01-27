@@ -10,6 +10,8 @@ object Constants {
 
     const val KEY_EMAIL = "email"
 
+    const val KEY_NIGHT_MODE = "night_mode"
+
     const val UNIQUE_WORK_NAME = "unique_work_request"
 
 }

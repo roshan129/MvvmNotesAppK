@@ -1,8 +1,11 @@
 package com.adivid.mvvmnotesappk.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,7 +15,14 @@ import com.adivid.mvvmnotesappk.databinding.FragmentSignInBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
 import com.adivid.mvvmnotesappk.utils.showProgressBar
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+
+const val RC_SIGN_IN = 111
 
 @AndroidEntryPoint
 class SignInFragment: Fragment(R.layout.fragment_sign_in) {
@@ -20,6 +30,7 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
     private var _binding : FragmentSignInBinding? = null
     private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,15 +38,19 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
 
         init()
         setUpOnClickListeners()
+        observers()
+        setUpGoogleSignIn()
 
     }
 
     private fun init() {
+
+    }
+
+    private fun observers() {
         authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
             if (userCreated) {
-                fetchDataFromFirebase()
-                Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
+                afterSignedInSuccessfully()
             } else {
                 Toast.makeText(requireActivity(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
             }
@@ -53,6 +68,17 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
                 }
             }
         })
+
+        authViewModel.googleSignIn.observe(viewLifecycleOwner, {
+            if(it != null) afterSignedInSuccessfully()
+        })
+
+    }
+
+    private fun afterSignedInSuccessfully() {
+        fetchDataFromFirebase()
+        Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
+        findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
     }
 
     private fun setUpOnClickListeners() {
@@ -72,6 +98,10 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
             findNavController().navigate(R.id.action_signInFragment_to_createAccountFragment)
         }
 
+        binding.googleSignInButton.setOnClickListener {
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
     }
 
     private fun validateFields(email: String, password: String): Boolean {
@@ -97,6 +127,37 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
             }
             else -> return true
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Timber.d("inside onActivityResult")
+        if(requestCode == RC_SIGN_IN){
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                Timber.d("firebaseAuthWithGoogle: ${account.id}", )
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Timber.d("google sign in failed: $e")
+                Toast.makeText(requireContext(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        authViewModel.firebaseAuthWithGoogle(idToken)
+
+    }
+
+    private fun setUpGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
     }
 
     private fun fetchDataFromFirebase() {

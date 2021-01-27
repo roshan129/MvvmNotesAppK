@@ -9,6 +9,9 @@ import com.adivid.mvvmnotesappk.repositories.AuthRepository
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.utils.Constants.KEY_EMAIL
 import com.adivid.mvvmnotesappk.utils.SharedPrefManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
@@ -17,11 +20,12 @@ import javax.inject.Inject
 class AuthViewModel @ViewModelInject constructor(
     private val authRepository: AuthRepository,
     private val sharedPreferences: SharedPreferences,
-    private val sharedPrefManager: SharedPrefManager
+    private val sharedPrefManager: SharedPrefManager,
 ): ViewModel() {
 
     var userCreated = MutableLiveData<Boolean>()
     var progressBar = MutableLiveData<Boolean>()
+    var googleSignIn = MutableLiveData<FirebaseUser>()
 
     var uiStates = MutableLiveData<LoadingStates>()
 
@@ -49,6 +53,13 @@ class AuthViewModel @ViewModelInject constructor(
             uiStates.postValue(LoadingStates.Error(e.message.toString()))
         }
 
+    }
+
+    fun firebaseAuthWithGoogle(idToken: String)  =viewModelScope.launch{
+        val user = authRepository.firebaseAuthWithGoogle(idToken)
+        if(user != null) sharedPrefManager.saveEmail(user.email?: "")
+        googleSignIn.postValue(user)
+        Timber.d("email : ${user!!.email}")
     }
 
     fun fetchDataFromFirebase(){

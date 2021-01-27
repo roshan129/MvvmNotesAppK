@@ -4,15 +4,19 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.db.NoteDatabase
 import com.adivid.mvvmnotesappk.utils.Constants.KEY_EMAIL
 import com.adivid.mvvmnotesappk.utils.Constants.NOTE_DATABASE_NAME
 import com.adivid.mvvmnotesappk.utils.Constants.SHARED_PREF_NAME
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Named
@@ -68,6 +72,14 @@ object AppModule {
     @Provides
     fun provideSavedEmail(sharedPreferences: SharedPreferences) =
         sharedPreferences.getString(KEY_EMAIL, "")
+
+    @Singleton
+    @Provides
+    fun provideGoogleSignInOptions() =
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(R.string.default_web_client_id.toString())
+            .requestEmail()
+            .build()
 
 
 }

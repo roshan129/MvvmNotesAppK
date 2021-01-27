@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/bg_color"
     android:layout_height="match_parent">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -20,14 +21,14 @@
         app:layout_constraintTop_toBottomOf="@+id/imageButtonBack"
         app:tint="@color/white" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Sign In Or Sign Up"
+        android:text="@string/sign_in_or_sign_up"
         android:textSize="18sp"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="@+id/imageView" />
@@ -37,9 +38,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_arrow_back_24"
-        android:background="@color/white"
+        android:background="@color/transparent"
         android:layout_marginStart="16dp"
-        android:tint="@color/black"
+        android:tint="@color/text_color"
         android:padding="12dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"

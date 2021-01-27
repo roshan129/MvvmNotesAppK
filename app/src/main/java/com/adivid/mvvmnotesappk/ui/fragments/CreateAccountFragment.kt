@@ -75,10 +75,14 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
             registerUser()
         }
 
+        binding.imageButtonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
     }
 
     private fun registerUser() {
-        val email = binding.editTextUsername.text.trim().toString()
+        val email = binding.editTextUsername.text?.trim().toString()
         val password = binding.editTextPassword.text.trim().toString()
         if (validateFields(email, password)) {
             authViewModel.registerUser(email, password)

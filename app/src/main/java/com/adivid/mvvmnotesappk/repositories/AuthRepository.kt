@@ -1,10 +1,13 @@
 package com.adivid.mvvmnotesappk.repositories
 
+import android.util.Log
 import com.adivid.mvvmnotesappk.db.Note
 import com.adivid.mvvmnotesappk.db.NoteDAO
 import com.adivid.mvvmnotesappk.mapper.FirebaseNoteDtoMapper
 import com.adivid.mvvmnotesappk.model.domain.FirebaseNoteDto
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -25,6 +28,18 @@ class AuthRepository @Inject constructor(
     suspend fun loginUser(email: String, password: String): Boolean {
         auth.signInWithEmailAndPassword(email, password).await()
         return auth.currentUser != null
+    }
+
+    suspend fun firebaseAuthWithGoogle(idToken: String): FirebaseUser?{
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        return try {
+            val task = auth.signInWithCredential(credential).await()
+            val user = task.user
+            user
+        }catch (e: Exception){
+            Timber.d("firebaseAuthWithGoogle exception: $e")
+            null
+        }
     }
 
     suspend fun fetchDataFromFirebase() {

@@ -83,19 +83,22 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
         holder.textViewBody.text = note.body
         holder.textViewDate.text = note.createdDateFormatted
         if (selectedItemIds.get(position)) {
-            holder.checkBox.isVisible = true
-            holder.checkBox.isChecked = true
+            setUpBGColor(holder, R.color.cardSelectedColor)
+            //holder.checkBox.isVisible = true
+            //holder.checkBox.isChecked = true
         } else {
             holder.checkBox.isVisible = false
+            setUpBGColor(holder, R.color.cardColor)
         }
-        when (Utils.getRandomNumber()) {
+
+       /* when (Utils.getRandomNumber()) {
             1 -> setUpBGColor(holder, R.color.notesColorBrown)
             2 -> setUpBGColor(holder, R.color.notesColorOrange)
             3 -> setUpBGColor(holder, R.color.notesColorGreen)
             4 -> setUpBGColor(holder, R.color.notesColorPurple)
             5 -> setUpBGColor(holder, R.color.notesColorRedLight)
             6 -> setUpBGColor(holder, R.color.notesColorAmber)
-        }
+        }*/
 
     }
 

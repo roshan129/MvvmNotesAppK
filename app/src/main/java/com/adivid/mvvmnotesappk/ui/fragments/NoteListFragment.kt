@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,6 +31,7 @@ import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
 import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
 import com.adivid.mvvmnotesappk.utils.Constants.UNIQUE_WORK_NAME
 import com.adivid.mvvmnotesappk.utils.FirebaseWorker
+import com.adivid.mvvmnotesappk.utils.SharedPrefManager
 import com.adivid.mvvmnotesappk.utils.afterTextChanged
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +48,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private var isSelectionMode = false
     private var backPressed: Long = 0
     @Inject lateinit var auth: FirebaseAuth
+    @Inject lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,11 +61,22 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpUiMode()
 
         init()
         setUpOnClickListeners()
-        observers()
 
+        observers()
+    }
+
+    private fun setUpUiMode() {
+        if(sharedPrefManager.isNightModeOn()){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            binding.imageButtonNightMode.setImageResource(R.drawable.ic_light_mode)
+        }else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            binding.imageButtonNightMode.setImageResource(R.drawable.ic_dark_mode)
+        }
     }
 
     private fun observers() {
@@ -134,12 +149,24 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             showOrHideKeyBoard(false)
         }
 
-        binding.imageViewProfile.setOnClickListener {
+        binding.ivProfile.setOnClickListener {
             findNavController().navigate(R.id.action_noteListFragment_to_profileFragment)
         }
 
         binding.editTextSearch.afterTextChanged { s ->
             searchForNotes(s)
+        }
+
+        binding.imageButtonNightMode.setOnClickListener {
+            if(sharedPrefManager.isNightModeOn()){
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                sharedPrefManager.saveNightMode(false)
+                binding.imageButtonNightMode.setImageResource(R.drawable.ic_dark_mode)
+            }else{
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                sharedPrefManager.saveNightMode(true)
+                binding.imageButtonNightMode.setImageResource(R.drawable.ic_light_mode)
+            }
         }
 
     }
@@ -172,7 +199,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
                 noteListAdapter.toggleSelection(i)
                 if (noteListAdapter.getSelectedCount() > 0) {
                     Timber.d("${noteListAdapter.getSelectedCount()}")
-                    binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
+                    setItemSelectedText(noteListAdapter.getSelectedCount().toString())
                 } else {
                     resetSelectionMode()
                 }
@@ -191,7 +218,17 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             val hasCheckedItems = noteListAdapter.getSelectedCount() > 0
             binding.cardLayoutBottom.isVisible = hasCheckedItems
             binding.cardLayoutTop.isVisible = hasCheckedItems
-            binding.tvItemsSelected.text = noteListAdapter.getSelectedCount().toString()
+            setItemSelectedText(noteListAdapter.getSelectedCount().toString())
+        }
+    }
+
+    private fun setItemSelectedText(selectedItems: String) {
+        if(selectedItems == "1") {
+            val text = selectedItems + "item selected"
+            binding.tvItemsSelected.text = text
+        }else{
+            val text = selectedItems + "items selected"
+            binding.tvItemsSelected.text = text
         }
     }
 
@@ -252,6 +289,10 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             if (binding.relativeSearchLayout.isVisible) {
                 binding.editTextSearch.setText("")
                 binding.relativeSearchLayout.isVisible = false
+                return
+            }
+            if(binding.cardLayoutTop.isVisible || binding.cardLayoutBottom.isVisible){
+                resetSelectionMode()
                 return
             }
             if (backPressed + TIME_INTERVAL > System.currentTimeMillis()) {

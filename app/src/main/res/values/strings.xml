@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">MvvmNotesAppK</string>
     <string name="fab_contentDesc">fab</string>
+    <string name="add_note">Add Note</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="create_account">Create Account</string>
+    <string name="i_have_an_account">I Have An Account</string>
+    <string name="notes">Notes</string>
+    <string name="_0_items_selected">0 Items Selected</string>
+    <string name="sign_in_or_sign_up">Sign In Or Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="forgot_password">Forgot Password?</string>
 </resources>
