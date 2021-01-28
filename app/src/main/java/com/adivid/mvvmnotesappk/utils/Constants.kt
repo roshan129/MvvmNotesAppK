@@ -12,6 +12,8 @@ object Constants {
 
     const val KEY_NIGHT_MODE = "night_mode"
 
+    const val KEY_TRANSFER_DATA = "key_transfer_data"
+
     const val UNIQUE_WORK_NAME = "unique_work_request"
 
 }

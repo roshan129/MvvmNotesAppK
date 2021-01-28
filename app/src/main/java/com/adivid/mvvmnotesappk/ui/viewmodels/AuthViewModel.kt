@@ -19,50 +19,48 @@ import javax.inject.Inject
 
 class AuthViewModel @ViewModelInject constructor(
     private val authRepository: AuthRepository,
-    private val sharedPreferences: SharedPreferences,
     private val sharedPrefManager: SharedPrefManager,
-): ViewModel() {
+) : ViewModel() {
 
     var userCreated = MutableLiveData<Boolean>()
     var progressBar = MutableLiveData<Boolean>()
     var googleSignIn = MutableLiveData<FirebaseUser>()
-
     var uiStates = MutableLiveData<LoadingStates>()
 
     fun registerUser(email: String, password: String) = viewModelScope.launch {
         try {
             uiStates.postValue(LoadingStates.Loading(true))
             val b = authRepository.registerUser(email, password)
-            if(b) sharedPreferences.edit().putString(KEY_EMAIL, email).apply()
+            if (b) sharedPrefManager.saveEmail(email)
             userCreated.postValue(b)
             uiStates.postValue(LoadingStates.Loading(false))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Timber.d("exception: $e")
             uiStates.postValue(LoadingStates.Error(e.message.toString()))
         }
     }
 
-    fun loginUser(email: String, password: String) = viewModelScope.launch{
+    fun loginUser(email: String, password: String) = viewModelScope.launch {
         try {
             uiStates.postValue(LoadingStates.Loading(true))
             val b = authRepository.loginUser(email, password)
             userCreated.postValue(b)
-            if(b) sharedPrefManager.saveEmail(email)
+            if (b) sharedPrefManager.saveEmail(email)
             uiStates.postValue(LoadingStates.Loading(false))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             uiStates.postValue(LoadingStates.Error(e.message.toString()))
         }
 
     }
 
-    fun firebaseAuthWithGoogle(idToken: String)  =viewModelScope.launch{
+    fun firebaseAuthWithGoogle(idToken: String) = viewModelScope.launch {
         val user = authRepository.firebaseAuthWithGoogle(idToken)
-        if(user != null) sharedPrefManager.saveEmail(user.email?: "")
+        if (user != null) sharedPrefManager.saveEmail(user.email ?: "")
         googleSignIn.postValue(user)
         Timber.d("email : ${user!!.email}")
     }
 
-    fun fetchDataFromFirebase(){
+    fun fetchDataFromFirebase() {
         viewModelScope.launch {
             authRepository.fetchDataFromFirebase()
         }

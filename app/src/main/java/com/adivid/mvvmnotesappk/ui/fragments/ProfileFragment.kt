@@ -22,18 +22,22 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProfileFragment: Fragment(R.layout.fragment_profile) {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
-    private var _binding :FragmentProfileBinding? = null
+    private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    @Inject lateinit var sharedPrefManager: SharedPrefManager
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
 
-    @Inject lateinit var sharedPreferencs: SharedPreferences
+    @Inject
+    lateinit var sharedPreferencs: SharedPreferences
 
-    @Inject lateinit var auth: FirebaseAuth
+    @Inject
+    lateinit var auth: FirebaseAuth
 
-    @Inject lateinit var gso: GoogleSignInOptions
+    @Inject
+    lateinit var gso: GoogleSignInOptions
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,10 +54,10 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
             viewLifecycleOwner,
             onBackPressedCallback
         )
-        if(sharedPrefManager.getEmail().isNotEmpty())
+        if (sharedPrefManager.getEmail().isNotEmpty())
             binding.textViewSignIn.text = sharedPrefManager.getEmail()
 
-        val s =sharedPreferencs.getString(KEY_EMAIL, "");
+        val s = sharedPreferencs.getString(KEY_EMAIL, "");
         Timber.d("sharedpref email: $s")
     }
 
@@ -74,14 +78,14 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
     }
 
     private fun showSignOutAlertDialog() {
-        AlertDialog.Builder(context) .apply {
+        AlertDialog.Builder(context).apply {
             setTitle("Sign Out")
             setMessage("Are you sure you want to log out?")
             setPositiveButton("Yes") { _, _ ->
                 signOut()
 
             }
-            setNegativeButton("No"){_,_->
+            setNegativeButton("No") { _, _ ->
 
             }
             create().show()
@@ -94,9 +98,10 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
         if (auth.currentUser == null) binding.textViewSignIn.text = "Sign In Or Sign Up"
         sharedPrefManager.clearPrefs()
         googleSignInClient.signOut().addOnCompleteListener {
-            if(it.isSuccessful){
+            if (it.isSuccessful) {
                 Timber.d("isSuccessfull : ${it.isSuccessful}")
-                Toast.makeText(requireContext(), "Successfully Logged Out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Successfully Logged Out", Toast.LENGTH_SHORT)
+                    .show();
             }
         }
 
@@ -107,7 +112,7 @@ class ProfileFragment: Fragment(R.layout.fragment_profile) {
         super.onDestroyView()
     }
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true){
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             findNavController().navigate(R.id.action_profileFragment_to_noteListFragment)
         }

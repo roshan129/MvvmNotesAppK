@@ -11,7 +11,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,10 +22,7 @@ import androidx.work.*
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.adapters.NoteListAdapter
 import com.adivid.mvvmnotesappk.databinding.FragmentNoteListBinding
-import com.adivid.mvvmnotesappk.mapper.FirebaseNoteDtoMapper
 import com.adivid.mvvmnotesappk.mapper.NoteDtoMapper
-import com.adivid.mvvmnotesappk.model.domain.FirebaseNoteDto
-import com.adivid.mvvmnotesappk.model.domain.NoteDto
 import com.adivid.mvvmnotesappk.ui.viewmodels.NoteViewModel
 import com.adivid.mvvmnotesappk.utils.Constants.TIME_INTERVAL
 import com.adivid.mvvmnotesappk.utils.Constants.UNIQUE_WORK_NAME
@@ -47,8 +43,12 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     private val noteViewModel: NoteViewModel by viewModels()
     private var isSelectionMode = false
     private var backPressed: Long = 0
-    @Inject lateinit var auth: FirebaseAuth
-    @Inject lateinit var sharedPrefManager: SharedPrefManager
+
+    @Inject
+    lateinit var auth: FirebaseAuth
+
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,10 +70,10 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     }
 
     private fun setUpUiMode() {
-        if(sharedPrefManager.isNightModeOn()){
+        if (sharedPrefManager.isNightModeOn()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             binding.imageButtonNightMode.setImageResource(R.drawable.ic_light_mode)
-        }else{
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             binding.imageButtonNightMode.setImageResource(R.drawable.ic_dark_mode)
         }
@@ -101,8 +101,16 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         })
 
         noteViewModel.deleteNotesFromServer.observe(viewLifecycleOwner, {
-            if(it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 sendDataToFirebase()
+            }
+        })
+
+        noteViewModel.checkForOfflineData.observe(viewLifecycleOwner, {
+            if (it && sharedPrefManager.toShowTransferDataDialog()) {
+                showTransferDataDialog()
+            } else {
+                sharedPrefManager.showTransferDialogPref(false)
             }
         })
     }
@@ -113,6 +121,10 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
             onBackPressedCallback
         )
         setUpRecyclerView()
+
+        if (sharedPrefManager.toShowTransferDataDialog()) {
+            checkForOfflineData()
+        }
     }
 
     private fun setUpOnClickListeners() {
@@ -158,11 +170,11 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
         }
 
         binding.imageButtonNightMode.setOnClickListener {
-            if(sharedPrefManager.isNightModeOn()){
+            if (sharedPrefManager.isNightModeOn()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 sharedPrefManager.saveNightMode(false)
                 binding.imageButtonNightMode.setImageResource(R.drawable.ic_dark_mode)
-            }else{
+            } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 sharedPrefManager.saveNightMode(true)
                 binding.imageButtonNightMode.setImageResource(R.drawable.ic_light_mode)
@@ -223,17 +235,17 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
     }
 
     private fun setItemSelectedText(selectedItems: String) {
-        if(selectedItems == "1") {
+        if (selectedItems == "1") {
             val text = selectedItems + "item selected"
             binding.tvItemsSelected.text = text
-        }else{
+        } else {
             val text = selectedItems + "items selected"
             binding.tvItemsSelected.text = text
         }
     }
 
     private fun sendDataToFirebase() {
-        val constraints =Constraints.Builder()
+        val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val request = OneTimeWorkRequest.Builder(FirebaseWorker::class.java)
@@ -257,6 +269,27 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
 
             }
             create().show()
+        }
+    }
+
+    private fun checkForOfflineData() {
+        noteViewModel.checkForOfflineData()
+
+    }
+
+    private fun showTransferDataDialog() {
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Transfer Data")
+            setMessage("Do you want to transfer data saved on this device?")
+            setPositiveButton("Yes") { _, _ ->
+                noteViewModel.syncOfflineNotes()
+                sharedPrefManager.showTransferDialogPref(false)
+            }
+            setNegativeButton("No") { _, _ ->
+                sharedPrefManager.showTransferDialogPref(false)
+            }
+            create()
+            show()
         }
     }
 
@@ -291,7 +324,7 @@ class NoteListFragment : Fragment(R.layout.fragment_note_list) {
                 binding.relativeSearchLayout.isVisible = false
                 return
             }
-            if(binding.cardLayoutTop.isVisible || binding.cardLayoutBottom.isVisible){
+            if (binding.cardLayoutTop.isVisible || binding.cardLayoutBottom.isVisible) {
                 resetSelectionMode()
                 return
             }

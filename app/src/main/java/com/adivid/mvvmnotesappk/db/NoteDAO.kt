@@ -12,6 +12,9 @@ interface NoteDAO {
     @Query("Select * from note WHERE isDataSent = 0 AND userId != '0'")
     fun getNotesToSync(): LiveData<List<Note>>
 
+    @Query("Select * from note WHERE isDataSent = 0 AND userId == '0' AND isDeleted =0")
+    suspend fun getOfflineNotesToSync(): List<Note>
+
     @Query("Select * from note WHERE isDeleted = 1")
     fun getNotesToDelete(): LiveData<List<Note>>
 

@@ -25,8 +25,11 @@ class NoteRepository @Inject constructor(
 
     fun getNotesToSync() = noteDAO.getNotesToSync()
 
+    suspend fun getOfflineNotesToSync(): List<Note> = noteDAO.getOfflineNotesToSync()
+
     fun getNotesToDelete() = noteDAO.getNotesToDelete()
 
     suspend fun getNotesForWorker() = noteDAO.getInsertedNotesForWorker()
+
 
 }

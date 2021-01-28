@@ -24,8 +24,7 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
     private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModels()
 
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
+    @Inject lateinit var sharedPrefManager: SharedPrefManager
 
     //@Inject lateinit var sharedPrefManager: SharedPrefManager
 
@@ -41,6 +40,7 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
         authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
             if (userCreated) {
                 Toast.makeText(requireContext(), "User Created", Toast.LENGTH_SHORT).show()
+                sharedPrefManager.showTransferDialogPref(true)
                 findNavController().navigate(R.id.action_createAccountFragment_to_profileFragment)
 
             } else {

@@ -14,6 +14,7 @@ import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentSignInBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
+import com.adivid.mvvmnotesappk.utils.SharedPrefManager
 import com.adivid.mvvmnotesappk.utils.showProgressBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -21,16 +22,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 const val RC_SIGN_IN = 111
 
 @AndroidEntryPoint
-class SignInFragment: Fragment(R.layout.fragment_sign_in) {
+class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
-    private var _binding : FragmentSignInBinding? = null
+    private var _binding: FragmentSignInBinding? = null
     private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModels()
     private lateinit var googleSignInClient: GoogleSignInClient
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,7 +60,7 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
             }
         })
 
-        authViewModel.uiStates.observe(viewLifecycleOwner, {uiState->
+        authViewModel.uiStates.observe(viewLifecycleOwner, { uiState ->
             when (uiState) {
                 is LoadingStates.Loading -> {
                     showProgressBar(uiState.isLoading)
@@ -64,18 +68,19 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
                 is LoadingStates.Error -> {
                     showProgressBar(false)
                     Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT)
-                        .show();
+                        .show()
                 }
             }
         })
 
         authViewModel.googleSignIn.observe(viewLifecycleOwner, {
-            if(it != null) afterSignedInSuccessfully()
+            if (it != null) afterSignedInSuccessfully()
         })
 
     }
 
     private fun afterSignedInSuccessfully() {
+        sharedPrefManager.showTransferDialogPref(true)
         fetchDataFromFirebase()
         Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
         findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
@@ -107,15 +112,15 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
     private fun validateFields(email: String, password: String): Boolean {
         when {
             email.isEmpty() -> {
-                Toast.makeText(requireContext(), "Enter email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Enter email", Toast.LENGTH_SHORT).show()
                 return false
             }
             password.isEmpty() -> {
-                Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show()
                 return false
             }
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                Toast.makeText(requireContext(), "Enter a valid email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Enter a valid email", Toast.LENGTH_SHORT).show()
                 return false
             }
             password.length < 6 -> {
@@ -132,12 +137,12 @@ class SignInFragment: Fragment(R.layout.fragment_sign_in) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Timber.d("inside onActivityResult")
-        if(requestCode == RC_SIGN_IN){
+        if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                Timber.d("firebaseAuthWithGoogle: ${account.id}", )
+                Timber.d("firebaseAuthWithGoogle: ${account.id}")
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
