@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.adivid.mvvmnotesappk.R
@@ -57,8 +58,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         if (sharedPrefManager.getEmail().isNotEmpty())
             binding.textViewSignIn.text = sharedPrefManager.getEmail()
 
-        val s = sharedPreferencs.getString(KEY_EMAIL, "");
+        val s = sharedPreferencs.getString(KEY_EMAIL, "")
         Timber.d("sharedpref email: $s")
+        checkSignOutButtonVisibility()
     }
 
     private fun setUpOnClickListeners() {
@@ -67,12 +69,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         binding.textViewSignIn.setOnClickListener {
-            findNavController().navigate(R.id.action_profileFragment_to_signInFragment)
+            if(auth.currentUser == null){
+                findNavController().navigate(R.id.action_profileFragment_to_signInFragment)
+            }
         }
 
         binding.textViewSignIn.setOnLongClickListener {
             showSignOutAlertDialog()
             return@setOnLongClickListener true
+        }
+
+        binding.buttonSignOut.setOnClickListener {
+            showSignOutAlertDialog()
         }
 
     }
@@ -95,16 +103,20 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun signOut() {
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
         auth.signOut()
-        if (auth.currentUser == null) binding.textViewSignIn.text = "Sign In Or Sign Up"
+        if (auth.currentUser == null) binding.textViewSignIn.text = getString(R.string.sign_in_or_sign_up)
         sharedPrefManager.clearPrefs()
         googleSignInClient.signOut().addOnCompleteListener {
             if (it.isSuccessful) {
                 Timber.d("isSuccessfull : ${it.isSuccessful}")
+                checkSignOutButtonVisibility()
                 Toast.makeText(requireContext(), "Successfully Logged Out", Toast.LENGTH_SHORT)
-                    .show();
+                    .show()
             }
         }
+    }
 
+    private fun checkSignOutButtonVisibility() {
+        binding.buttonSignOut.isVisible = auth.currentUser != null
     }
 
     override fun onDestroyView() {

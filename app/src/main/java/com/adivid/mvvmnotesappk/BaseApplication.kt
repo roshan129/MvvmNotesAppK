@@ -15,7 +15,7 @@ class BaseApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(Timber.DebugTree())
+            Timber.plant(Timber.DebugTree())
     }
 
     override fun getWorkManagerConfiguration() =

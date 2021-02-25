@@ -31,7 +31,6 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewBody: TextView = itemView.findViewById(R.id.textViewBody)
         val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
-        val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkbox)
         val cardRelativeLayout: RelativeLayout = itemView.findViewById(R.id.cardRelativeLayout)
 
         init {
@@ -87,7 +86,6 @@ class NoteListAdapter : RecyclerView.Adapter<NoteListAdapter.NoteViewHolder>() {
             //holder.checkBox.isVisible = true
             //holder.checkBox.isChecked = true
         } else {
-            holder.checkBox.isVisible = false
             setUpBGColor(holder, R.color.cardColor)
         }
 

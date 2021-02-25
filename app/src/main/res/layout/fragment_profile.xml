@@ -28,6 +28,7 @@
         android:layout_marginStart="24dp"
         android:text="@string/sign_in_or_sign_up"
         android:textSize="18sp"
+        android:fontFamily="@font/quicksand_semibold"
         android:textColor="@color/text_color"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -46,4 +47,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
          />
+
+    <Button
+        android:id="@+id/buttonSignOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Sign Out"
+        android:visibility="gone"
+        android:fontFamily="@font/quicksand_semibold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

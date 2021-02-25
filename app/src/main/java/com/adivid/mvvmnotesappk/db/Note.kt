@@ -7,7 +7,7 @@ import java.text.DateFormat
 @Entity(tableName = "note")
 data class Note(
     var body: String,
-    val created: Long = System.currentTimeMillis(),
+    var updated_date: Long = System.currentTimeMillis(),
     var isDataSent:Int = 0,
     var isUpdated:Int = 0,
     var isDeleted:Int = 0,
@@ -17,5 +17,5 @@ data class Note(
     @PrimaryKey
     var id: Int?= null
     val createdDateFormatted: String
-        get() = DateFormat.getDateTimeInstance().format(created)
+        get() = DateFormat.getDateTimeInstance().format(updated_date)
 }

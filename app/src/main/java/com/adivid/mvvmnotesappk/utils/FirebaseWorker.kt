@@ -2,17 +2,17 @@ package com.adivid.mvvmnotesappk.utils
 
 import android.content.Context
 import androidx.hilt.Assisted
+
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.adivid.mvvmnotesappk.db.NoteDAO
 import com.adivid.mvvmnotesappk.mapper.FirebaseNoteDtoMapper
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
-import java.lang.Exception
 
 class FirebaseWorker @WorkerInject constructor(
     @Assisted context: Context,
@@ -44,11 +44,32 @@ class FirebaseWorker @WorkerInject constructor(
 
     private suspend fun saveInsertedDataToFirebase() {
         val list = dao.getInsertedNotesForWorker()
-        repeat(list.size) {
+       /* repeat(list.size) {
             val note = list[it]
             val fNote = FirebaseNoteDtoMapper().mapFromEntity(note)
             fNote.uId = firebaseUid
             val documentRef = firebaseFirestore.collection("notes_data").document()
+            val docId = documentRef.id
+            Timber.d("docId: $docId")
+            try {
+                fNote.documentId = docId
+                documentRef.set(fNote).await()
+                Timber.d("Inserted in fire store successfully")
+                note.isDataSent = 1
+                note.documentId = docId
+                note.userId = firebaseUid
+                dao.updateNote(note)
+            } catch (e: Exception) {
+                Timber.d("Some error: $e")
+            }
+        }*/
+
+         repeat(list.size) {
+            val note = list[it]
+            val fNote = FirebaseNoteDtoMapper().mapFromEntity(note)
+            fNote.uId = firebaseUid
+            val documentRef = firebaseFirestore.collection("user_data")
+                .document(firebaseUid).collection("notes_data").document()
             val docId = documentRef.id
             Timber.d("docId: $docId")
             try {
@@ -72,8 +93,8 @@ class FirebaseWorker @WorkerInject constructor(
             val fNote = FirebaseNoteDtoMapper().mapFromEntity(note)
             fNote.uId = firebaseUid
             try {
-                val documentRef = firebaseFirestore.collection("notes_data")
-                    .document(note.documentId!!)
+                val documentRef = firebaseFirestore.collection("user_data")
+                    .document(firebaseUid).collection("notes_data").document(note.documentId!!)
                 documentRef.set(fNote)
                 note.isUpdated = 0
                 note.isDataSent = 1
@@ -88,14 +109,15 @@ class FirebaseWorker @WorkerInject constructor(
 
     private suspend fun deleteNotesFromFirebase() {
         val deleteList = dao.getNotesForDeleting()
-        repeat(deleteList.size){
+        repeat(deleteList.size) {
             try {
-                val documentRef = firebaseFirestore.collection("notes_data").
-                document(deleteList[it].documentId!!)
+                val documentRef =
+                    firebaseFirestore.collection("user_data").document(firebaseUid)
+                        .collection("notes_data").document(deleteList[it].documentId!!)
                 documentRef.delete()
                 dao.deleteNote(deleteList[it])
                 Timber.d("deleteNotesFromFirebase: deleted")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Timber.d("deleteNotesFromFirebase: Error Occurred: $e")
             }
         }

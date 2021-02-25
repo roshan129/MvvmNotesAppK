@@ -30,13 +30,13 @@ class AuthRepository @Inject constructor(
         return auth.currentUser != null
     }
 
-    suspend fun firebaseAuthWithGoogle(idToken: String): FirebaseUser?{
+    suspend fun firebaseAuthWithGoogle(idToken: String): FirebaseUser? {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         return try {
             val task = auth.signInWithCredential(credential).await()
             val user = task.user
             user
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Timber.d("firebaseAuthWithGoogle exception: $e")
             null
         }
@@ -44,30 +44,30 @@ class AuthRepository @Inject constructor(
 
     suspend fun fetchDataFromFirebase() {
         try {
-            val documentSnapshot = firebaseFirestore.collection("notes_data").whereEqualTo(
-                "uid",
-                auth.currentUser!!.uid
-            ).get().await()
+            val documentSnapshot =
+                firebaseFirestore.collection("user_data")
+                    .document(auth.currentUser!!.uid).collection("notes_data")
+                    .get().await()
 
-            if(!documentSnapshot.isEmpty){
+            if (!documentSnapshot.isEmpty) {
                 val fNoteDtolist = documentSnapshot.toObjects(FirebaseNoteDto::class.java)
                 Timber.d("fetchDataFromFirebase suspend: ${fNoteDtolist[0].body}")
                 val noteList = mutableListOf<Note>()
-                repeat(fNoteDtolist.size){
+                repeat(fNoteDtolist.size) {
                     val note = FirebaseNoteDtoMapper().mapToEntity(fNoteDtolist[it])
                     noteList.add(note)
                 }
                 insertServerDataInDb(noteList)
 
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Timber.d("fetchDataFromFirebase exception: $e")
         }
     }
 
     private suspend fun insertServerDataInDb(noteList: MutableList<Note>) {
-        repeat(noteList.size){
-            if(!checkIfNoteExists(noteList[it].documentId)){
+        repeat(noteList.size) {
+            if (!checkIfNoteExists(noteList[it].documentId)) {
                 dao.insertNote(noteList[it])
             }
         }
@@ -77,7 +77,7 @@ class AuthRepository @Inject constructor(
     private suspend fun checkIfNoteExists(docId: String?): Boolean {
         docId.let {
             val list = dao.checkIfNoteExists(docId)
-            if(list.isNotEmpty()) return true
+            if (list.isNotEmpty()) return true
         }
         return false
     }

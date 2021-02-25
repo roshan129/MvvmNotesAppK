@@ -37,7 +37,7 @@
     <RelativeLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="74dp"
+        android:layout_height="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -46,20 +46,23 @@
             android:id="@+id/iv_profile"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="12dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/app_name"
             android:elevation="12dp"
-            android:src="@drawable/male_user"
-            android:contentDescription="@string/app_name" />
+            android:src="@drawable/male_user" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="24dp"
+            android:fontFamily="@font/quicksand_semibold"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/imageButtonNightMode"
             android:text="@string/notes"
-            android:layout_toEndOf="@+id/iv_profile"
-            android:layout_toStartOf="@+id/imageButtonSearch"
             android:textColor="@color/text_color"
             android:textSize="24sp" />
 
@@ -67,25 +70,23 @@
             android:id="@+id/imageButtonSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
-            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="24dp"
+            android:layout_toStartOf="@+id/iv_profile"
             android:background="@color/transparent"
+            android:contentDescription="@string/app_name"
             android:padding="8dp"
             android:src="@drawable/ic_search_24"
-            android:tint="@color/text_color"
-            />
+            android:tint="@color/text_color" />
 
         <ImageButton
             android:id="@+id/imageButtonNightMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
-            android:layout_toStartOf="@+id/imageButtonSearch"
             android:layout_centerVertical="true"
             android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/imageButtonSearch"
             android:background="@color/transparent"
+            android:contentDescription="@string/app_name"
             android:padding="8dp"
             android:src="@drawable/ic_dark_mode"
             android:tint="@color/text_color"
@@ -100,6 +101,8 @@
         android:layout_height="74dp"
         android:background="@color/bg_color"
         android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -110,8 +113,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="12dp"
-            android:contentDescription="@string/app_name"
             android:background="@color/transparent"
+            android:contentDescription="@string/app_name"
             android:padding="4dp"
             android:src="@drawable/ic_baseline_arrow_back_ios_24"
             android:tint="@color/text_color" />
@@ -122,9 +125,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/app_name"
             android:layout_marginEnd="12dp"
             android:background="@color/transparent"
+            android:contentDescription="@string/app_name"
             android:padding="4dp"
             android:src="@drawable/ic_close_24"
             android:tint="@color/text_color" />
@@ -140,17 +143,16 @@
             android:layout_toStartOf="@+id/imageButtonSearchCancel"
             android:layout_toEndOf="@+id/imageButtonSearchBack"
             app:hintAnimationEnabled="false"
-            app:placeholderText="Search"
-            >
+            app:placeholderText="Search">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textCursorDrawable="@drawable/cursor_color"
                 android:background="@drawable/edit_text_border"
                 android:drawableStart="@drawable/ic_search_24"
-                android:drawablePadding="2dp" />
+                android:drawablePadding="2dp"
+                android:textCursorDrawable="@drawable/cursor_color" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -180,8 +182,8 @@
                 android:id="@+id/imageButtonDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/app_name"
                 android:background="@color/transparent"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_delete_24"
                 android:tint="@color/text_color" />
 
@@ -194,32 +196,31 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/cardColor"
-        android:translationZ="2dp"
-        android:visibility="gone"
-        tools:visibility="gone"
         android:clickable="true"
         android:focusable="true"
+        android:translationZ="2dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
 
         <RelativeLayout
             android:id="@+id/relativeLayoutTop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
-            >
+            android:visibility="visible">
 
             <ImageButton
                 android:id="@+id/imageButtonCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/app_name"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
-                android:padding="12dp"
                 android:background="@color/transparent"
+                android:contentDescription="@string/app_name"
+                android:padding="12dp"
                 android:src="@drawable/ic_close_24"
                 app:tint="@color/text_color"
 

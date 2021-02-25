@@ -7,7 +7,7 @@ class FirebaseNoteDtoMapper : EntityMapper<Note, FirebaseNoteDto> {
 
     override fun mapFromEntity(entity: Note): FirebaseNoteDto {
         val fNote = FirebaseNoteDto(entity.id!!, entity.body)
-        fNote.created = entity.created
+        fNote.updated_date = entity.updated_date
         fNote.documentId = entity.documentId
         return fNote
     }
@@ -17,6 +17,7 @@ class FirebaseNoteDtoMapper : EntityMapper<Note, FirebaseNoteDto> {
         note.isDataSent = 1
         note.userId = domainModel.uId!!
         note.documentId = domainModel.documentId
+        note.updated_date = domainModel.updated_date!!
         return note
     }
 }

@@ -9,6 +9,9 @@ interface NoteDAO {
     @Query("Select * from note where isDeleted = 0 AND userId = :uId ORDER BY id DESC")
     fun getAllNotes(uId: String): LiveData<List<Note>>
 
+    @Query("SELECT * from note WHERE body LIKE '%'||:string ||'%' AND isDeleted = 0 AND userId = :uId ORDER BY id DESC")
+    suspend fun searchNotes(string: String, uId: String): List<Note>
+
     @Query("Select * from note WHERE isDataSent = 0 AND userId != '0'")
     fun getNotesToSync(): LiveData<List<Note>>
 
@@ -36,8 +39,6 @@ interface NoteDAO {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateMultipleNotes(notes: List<Note>): Int
 
-    @Query("SELECT * from note WHERE body LIKE '%'||:string ||'%' AND isDeleted = 0 AND userId = :uId ORDER BY id DESC")
-    suspend fun searchNotes(string: String, uId: String): List<Note>
 
     @Delete
     suspend fun deleteNote(note: Note): Int

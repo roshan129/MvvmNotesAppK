@@ -7,7 +7,7 @@ data class FirebaseNoteDto(
     var id: Int = 0,
     var body: String = "",
     var documentId: String? = null,
-    var created: Long? = null,
+    var updated_date: Long? = null,
     var uId: String? = null
 ) {
 
