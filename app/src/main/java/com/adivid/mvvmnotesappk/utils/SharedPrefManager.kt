@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class SharedPrefManager @Inject constructor(
     val context: Context,
-    val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences
 ) {
 
     fun saveEmail(email: String) {
@@ -24,21 +24,25 @@ class SharedPrefManager @Inject constructor(
     }
 
     fun clearPrefs() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit().apply() {
+            putString(KEY_EMAIL, "")
+            putBoolean(KEY_TRANSFER_DATA, false)
+                .apply()
+        }
     }
 
     fun isNightModeOn(): Boolean {
         return sharedPreferences.getBoolean(KEY_NIGHT_MODE, false)
     }
 
-    fun saveNightMode(b: Boolean){
-        sharedPreferences.edit().apply{
+    fun saveNightMode(b: Boolean) {
+        sharedPreferences.edit().apply {
             putBoolean(KEY_NIGHT_MODE, b).apply()
         }
     }
 
-    fun showTransferDialogPref(b: Boolean){
-        sharedPreferences.edit().apply{
+    fun showTransferDialogPref(b: Boolean) {
+        sharedPreferences.edit().apply {
             putBoolean(KEY_TRANSFER_DATA, b).apply()
         }
     }

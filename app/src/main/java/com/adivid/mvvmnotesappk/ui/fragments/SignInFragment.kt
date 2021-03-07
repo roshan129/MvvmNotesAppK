@@ -14,6 +14,7 @@ import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentSignInBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
+import com.adivid.mvvmnotesappk.utils.Constants.RC_SIGN_IN
 import com.adivid.mvvmnotesappk.utils.SharedPrefManager
 import com.adivid.mvvmnotesappk.utils.showProgressBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
-const val RC_SIGN_IN = 111
 
 @AndroidEntryPoint
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
