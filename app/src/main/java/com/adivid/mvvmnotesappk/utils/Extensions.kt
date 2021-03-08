@@ -1,9 +1,11 @@
 package com.adivid.mvvmnotesappk.utils
 
+import android.app.Activity
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.core.view.isVisible
 
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
@@ -20,6 +22,14 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
     })
 }
 
-fun ProgressBar.showProgressBar(boolean: Boolean){
-    this.isVisible = boolean
+fun ProgressBar.showProgressBar(){
+    this.isVisible = true
+}
+
+fun ProgressBar.hideProgressBar() {
+    this.isVisible = false
+}
+
+fun Activity.showToast(msg: String){
+    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 }

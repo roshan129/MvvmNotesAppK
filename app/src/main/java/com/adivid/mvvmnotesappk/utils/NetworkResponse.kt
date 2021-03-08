@@ -1,12 +1,12 @@
 package com.adivid.mvvmnotesappk.utils
 
-sealed class NetworkResult<T>(
+sealed class NetworkResponse<T>(
     val data: T? = null,
     val message: String? = null
 ) {
 
-    class Success<T>(data: T): NetworkResult<T>(data)
-    class Error<T>(message: String?, data: T? = null): NetworkResult<T>(data, message)
-    class Loading<T>: NetworkResult<T>()
+    class Success<T>(data: T): NetworkResponse<T>(data)
+    class Error<T>(message: String?, data: T? = null): NetworkResponse<T>(data, message)
+    class Loading<T>: NetworkResponse<T>()
 
 }

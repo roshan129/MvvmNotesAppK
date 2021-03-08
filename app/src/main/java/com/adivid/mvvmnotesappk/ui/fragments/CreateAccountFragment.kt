@@ -12,8 +12,7 @@ import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentCreateAccountBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
-import com.adivid.mvvmnotesappk.utils.SharedPrefManager
-import com.adivid.mvvmnotesappk.utils.showProgressBar
+import com.adivid.mvvmnotesappk.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,33 +36,30 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
     }
 
     private fun init() {
-        authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
-            if (userCreated) {
-                Toast.makeText(requireContext(), "User Created", Toast.LENGTH_SHORT).show()
-                sharedPrefManager.showTransferDialogPref(true)
-                findNavController().navigate(R.id.action_createAccountFragment_to_profileFragment)
-
-            } else {
-                Toast.makeText(requireActivity(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        authViewModel.progressBar.observe(viewLifecycleOwner, {
-            showProgressBar(it)
-        })
-
-        authViewModel.uiStates.observe(viewLifecycleOwner, { uiState ->
-            when (uiState) {
-                is LoadingStates.Loading -> {
-                    showProgressBar(uiState.isLoading)
+        authViewModel.userCreated1.observe(viewLifecycleOwner, {
+            response->
+            when(response) {
+                is NetworkResponse.Success ->{
+                    hideProgressBar()
+                    if(response.data!!) {
+                        requireActivity().showToast("User Created")
+                        sharedPrefManager.showTransferDialogPref(true)
+                        findNavController().navigate(R.id.action_createAccountFragment_to_profileFragment)
+                    }else{
+                        requireActivity().showToast("Some Error Occurred")
+                    }
                 }
-                is LoadingStates.Error -> {
-                    showProgressBar(false)
-                    Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT)
-                        .show();
+                is NetworkResponse.Error -> {
+                    hideProgressBar()
+                    requireActivity().showToast(response.message!!)
+
+                }
+                is NetworkResponse.Loading -> {
+                    showProgressBar()
                 }
             }
         })
+
     }
 
     private fun setUpOnClickListeners() {
@@ -114,9 +110,14 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
         }
     }
 
-    private fun showProgressBar(b: Boolean) {
-        binding.progressBar.showProgressBar(b)
+    private fun showProgressBar() {
+        binding.progressBar.showProgressBar()
     }
+
+    private fun hideProgressBar() {
+        binding.progressBar.hideProgressBar()
+    }
+
 
     override fun onDestroyView() {
         _binding = null

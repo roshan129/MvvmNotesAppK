@@ -75,6 +75,11 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             showOrHideKeyBoard(false)
             requireActivity().onBackPressed()
         }
+
+        binding.relativeLayout.setOnClickListener {
+            Timber.d("nested clckwess")
+            showOrHideKeyBoard(true)
+        }
     }
 
     private fun validateFields(): Boolean {

@@ -14,9 +14,8 @@ import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentSignInBinding
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
+import com.adivid.mvvmnotesappk.utils.*
 import com.adivid.mvvmnotesappk.utils.Constants.RC_SIGN_IN
-import com.adivid.mvvmnotesappk.utils.SharedPrefManager
-import com.adivid.mvvmnotesappk.utils.showProgressBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -52,23 +51,22 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun observers() {
-        authViewModel.userCreated.observe(viewLifecycleOwner, { userCreated ->
-            if (userCreated) {
-                afterSignedInSuccessfully()
-            } else {
-                Toast.makeText(requireActivity(), "Some Error Occurred", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        authViewModel.uiStates.observe(viewLifecycleOwner, { uiState ->
-            when (uiState) {
-                is LoadingStates.Loading -> {
-                    showProgressBar(uiState.isLoading)
+        authViewModel.userCreated1.observe(viewLifecycleOwner, {
+            response ->
+            when(response) {
+                is NetworkResponse.Success -> {
+                    hideProgressBar()
+                    response.data?.let {
+                        if(it) afterSignedInSuccessfully()
+                        else requireActivity().showToast("Some Error Occurred")
+                    }
                 }
-                is LoadingStates.Error -> {
-                    showProgressBar(false)
-                    Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT)
-                        .show()
+                is NetworkResponse.Error -> {
+                    hideProgressBar()
+                    requireActivity().showToast(response.message!!)
+                }
+                is NetworkResponse.Loading -> {
+                    showProgressBar()
                 }
             }
         })
@@ -169,8 +167,12 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         authViewModel.fetchDataFromFirebase()
     }
 
-    private fun showProgressBar(b: Boolean) {
-        binding.progressBar.showProgressBar(b)
+    private fun showProgressBar() {
+        binding.progressBar.showProgressBar()
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.hideProgressBar()
     }
 
     override fun onDestroyView() {
