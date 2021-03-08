@@ -21,6 +21,7 @@ import com.adivid.mvvmnotesappk.utils.FirebaseWorker
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import java.lang.NullPointerException
 import javax.inject.Inject
 
 @AndroidEntryPoint

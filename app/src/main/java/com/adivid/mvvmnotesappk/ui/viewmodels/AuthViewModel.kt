@@ -1,21 +1,15 @@
 package com.adivid.mvvmnotesappk.ui.viewmodels
 
-import android.content.SharedPreferences
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adivid.mvvmnotesappk.repositories.AuthRepository
 import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
-import com.adivid.mvvmnotesappk.utils.Constants.KEY_EMAIL
 import com.adivid.mvvmnotesappk.utils.SharedPrefManager
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.lang.Exception
-import javax.inject.Inject
 
 class AuthViewModel @ViewModelInject constructor(
     private val authRepository: AuthRepository,
