@@ -4,15 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentSignInBinding
-import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
 import com.adivid.mvvmnotesappk.utils.*
 import com.adivid.mvvmnotesappk.utils.Constants.RC_SIGN_IN
@@ -23,7 +20,6 @@ import com.google.android.gms.common.api.ApiException
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
@@ -39,31 +35,28 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSignInBinding.bind(view)
 
-        init()
         setUpOnClickListeners()
         observers()
         setUpGoogleSignIn()
 
     }
 
-    private fun init() {
-
-    }
-
     private fun observers() {
         authViewModel.userCreated1.observe(viewLifecycleOwner, {
             response ->
+            Timber.d("inside confirm")
             when(response) {
                 is NetworkResponse.Success -> {
                     hideProgressBar()
                     response.data?.let {
+                        Timber.d("data%s", it)
                         if(it) afterSignedInSuccessfully()
-                        else requireActivity().showToast("Some Error Occurred")
+                        else showToast(getString(R.string.error_occurred))
                     }
                 }
                 is NetworkResponse.Error -> {
                     hideProgressBar()
-                    requireActivity().showToast(response.message!!)
+                    showToast(response.message!!)
                 }
                 is NetworkResponse.Loading -> {
                     showProgressBar()
@@ -79,9 +72,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
     private fun afterSignedInSuccessfully() {
         sharedPrefManager.showTransferDialogPref(true)
-        fetchDataFromFirebase()
-        Toast.makeText(requireContext(), "Logged In Successfully", Toast.LENGTH_SHORT).show()
+        showToast(getString(R.string.log_in_success))
         findNavController().navigate(R.id.action_signInFragment_to_profileFragment)
+        fetchDataFromFirebase()
     }
 
     private fun setUpOnClickListeners() {
@@ -105,26 +98,30 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+
+        binding.textViewForgotPassword.setOnClickListener {
+            showToast(getString(R.string.to_implement))
+        }
     }
 
     private fun validateFields(email: String, password: String): Boolean {
         when {
             email.isEmpty() -> {
-                Toast.makeText(requireContext(), "Enter email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.enter_email), Toast.LENGTH_SHORT).show()
                 return false
             }
             password.isEmpty() -> {
-                Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.enter_password), Toast.LENGTH_SHORT).show()
                 return false
             }
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                Toast.makeText(requireContext(), "Enter a valid email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.enter_valid_email), Toast.LENGTH_SHORT).show()
                 return false
             }
             password.length < 6 -> {
                 Toast.makeText(
                     requireContext(),
-                    "Password should be at least 6 characters long", Toast.LENGTH_SHORT
+                    getString(R.string.password_characters), Toast.LENGTH_SHORT
                 ).show()
                 return false
             }

@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.adivid.mvvmnotesappk.R
 import com.adivid.mvvmnotesappk.databinding.FragmentCreateAccountBinding
-import com.adivid.mvvmnotesappk.ui.fragments.states.LoadingStates
 import com.adivid.mvvmnotesappk.ui.viewmodels.AuthViewModel
 import com.adivid.mvvmnotesappk.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,16 +41,16 @@ class CreateAccountFragment : Fragment(R.layout.fragment_create_account) {
                 is NetworkResponse.Success ->{
                     hideProgressBar()
                     if(response.data!!) {
-                        requireActivity().showToast("User Created")
+                        showToast("User Created")
                         sharedPrefManager.showTransferDialogPref(true)
                         findNavController().navigate(R.id.action_createAccountFragment_to_profileFragment)
                     }else{
-                        requireActivity().showToast("Some Error Occurred")
+                        showToast("Some Error Occurred")
                     }
                 }
                 is NetworkResponse.Error -> {
                     hideProgressBar()
-                    requireActivity().showToast(response.message!!)
+                    showToast(response.message!!)
 
                 }
                 is NetworkResponse.Loading -> {

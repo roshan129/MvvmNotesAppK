@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MvvmNotesAppK</string>
+    <string name="app_name">Notes</string>
     <string name="fab_contentDesc">fab</string>
     <string name="add_note">Add Note</string>
     <string name="email">Email</string>
@@ -12,4 +12,11 @@
     <string name="sign_in_or_sign_up">Sign In Or Sign Up</string>
     <string name="sign_in">Sign In</string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="log_in_success">Logged In Successfully</string>
+    <string name="to_implement">To be implemented</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_valid_email">Enter a valid email</string>
+    <string name="password_characters">Password should be at least 6 characters long</string>
+    <string name="error_occurred">Some Error Occurred</string>
 </resources>

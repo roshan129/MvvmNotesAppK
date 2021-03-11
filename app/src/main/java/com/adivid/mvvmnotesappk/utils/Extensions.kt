@@ -1,12 +1,14 @@
 package com.adivid.mvvmnotesappk.utils
 
 import android.app.Activity
+import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
@@ -30,6 +32,6 @@ fun ProgressBar.hideProgressBar() {
     this.isVisible = false
 }
 
-fun Activity.showToast(msg: String){
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+fun Fragment.showToast(msg: String){
+    Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show();
 }
