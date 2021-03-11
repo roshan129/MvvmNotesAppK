@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#070706</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#142EF5</color>
+
+    <color name="bg_color">@color/blue_smoke</color>
+    <color name="text_color">@color/white</color>
+    <color name="text_color_second">@color/light_blue_primary_dark</color>
+    <color name="cardColor">#1E1E1E</color>
+    <color name="fabBgColor">@color/colorAccent</color>
+    <color name="fabIconTint">@color/white</color>
+    <color name="editTextCursorColor">@color/colorAccent</color>
+    <color name="cardSelectedColor">#6200EE</color>
+
+    <color name="blue_smoke">#000000</color>
+
+</resources>
